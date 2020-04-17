@@ -24,7 +24,7 @@ int[] troopsOnTurnStart = new int[42];
 boolean troopsPlaced = false;
 boolean cardAwarded = false;
 int cardType =0;
-
+int cardPlayer=-1;
 int attackerDicePick =0;
 int defenderDicePick =0;
 
@@ -231,8 +231,8 @@ void dataIn(){
         
         delay(10);
         // CHANGE THIS LATER
-        turn++;
-       setupTurn(turnOrder.get(turn),0);
+        turn=(turn+1)%3;
+       setupTurn(turnOrder.get(turn),cardPlayer);
       }
       
       if(match(sdata[0],"tacticaladd")!=null){
@@ -328,7 +328,7 @@ void dataIn(){
             if(secondHighAttack>secondHighDefense) defendingTileDamage+=1;
             else attackingTileDamage+=1;
            }
-           
+           if(troopsOnTile[attackingCountry]-attackingTileDamage<=0) attackingTileDamage -= 1;
            resultmessage += attackingTileDamage+" "+defendingTileDamage+"\n";
            if(troopsOnTile[defendingCountry] - defendingTileDamage>=0){
             cardAwarded = true; 
@@ -365,7 +365,7 @@ void dataIn(){
        else if(battlePhase=="conquest phase"){
          
          if(match(sdata[0],"moretroops")!=null){
-           if(troopsOnTile[attackingCountry]>1){
+           if(troopsOnTile[attackingCountry]>2){
             troopsOnTile[attackingCountry]--;
             troopsOnTile[defendingCountry]++;
             s.write("addtonewtile\n");
@@ -425,13 +425,18 @@ void setupTurn( int player,int lastPlayer ){
   String cardString = " 0";
   if(lastPlayer!=-1){
     cardPick = pickACard();
+    
     if(cardPick!=-1){
-     addCard(lastPlayer,cardPick); 
+     addCard(cardPlayer,cardPick); 
      cardString = " 1 "+lastPlayer+" "+cardPick;
     }
   }
   cardAwarded = false;
-  
+  cardPlayer = player;
+  println(cardAwarded);
+  println(cardPick);
+  println(lastPlayer);
+  println(cardPlayer);
   
   turnPhase = "troop placement phase";
   int reinforcements = getBaseReinforcements(player)+getContinentsBonus(player);
@@ -444,6 +449,7 @@ void setupTurn( int player,int lastPlayer ){
  delay(1000);
  println("start turn");
  s.write("turnstart "+player+" "+placeableTroops[player]+cardString+"\n");
+ println("turnstart "+player+" "+placeableTroops[player]+cardString+"\n");
 }
 
 int getBaseReinforcements(int player){
@@ -526,7 +532,7 @@ int getContinentsBonus(int player){
  && countries.hasValue(39)
 && countries.hasValue(40)
 && countries.hasValue(41)
- ) continentBonus +=5; // has Oceania
+ ) continentBonus +=2; // has Oceania
  
  
  return continentBonus;

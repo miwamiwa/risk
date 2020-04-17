@@ -635,9 +635,11 @@ void runGamePhase(){
        if(mousePressed&&!choiceMade){
          choiceMade = true;
         if(mouseButton==LEFT){
+          delay(20);
           c.write("tacticaladd "+tacticalMoveFrom+" "+tacticalMoveTo+"\n");
         }
         else if(mouseButton==RIGHT){
+          delay(20);
           c.write("tacticalremove "+tacticalMoveFrom+" "+tacticalMoveTo+"\n");
         }
        }
@@ -728,9 +730,11 @@ void runGamePhase(){
           
           if(mousePressed&&mouseButton==LEFT){
            c.write("moretroops\n");
+           delay(20);
           }
           else if(mousePressed&&mouseButton==RIGHT){
            c.write("lesstroops\n");
+           delay(20);
           }
            infoRect(
           "LEFT CLICK to add dudes to your new territory, "+territoryNames[attackTarget]
@@ -1244,12 +1248,12 @@ boolean hasCombo(int i1, int i2, int i3, IntList input){
   
   int index2 =-1;
   for(int i=0; i<input.size(); i++){
-   if(input.get(i)==i2&&input.get(i)!=index1) index2=i; 
+   if(input.get(i)==i2&&i!=index1) index2=i; 
   }
   
   int index3 =-1;
   for(int i=0; i<input.size(); i++){
-   if(input.get(i)==i3&&input.get(i)!=index2&&input.get(i)!=index1) index3=i; 
+   if(input.get(i)==i3&&i!=index2&&i!=index1) index3=i; 
   }
   
   if(index1!=-1&&index2!=-1&&index3!=-1) result = true;

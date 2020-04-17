@@ -103,8 +103,9 @@ void checkForEveryoneAndStart(){
     
  //   players.append("playertwoooo");
   //  players.append("playerhreet");
-  delay(1000);
    gameStarted = true; 
+  delay(1000);
+  
    gamePhase="initial troop assignment";
    println("gameload");
    s.write("gameload "+players.get(0)+" "+players.get(1)+" "+players.get(2)+" ");
@@ -141,6 +142,7 @@ void dataIn(){
    players.append( sdata[1] );
    int index = players.size()-1;
    s.write( "1 "+index+"\n");
+   delay(10);
    println("newplayer "+index+"\n");
    }
   }

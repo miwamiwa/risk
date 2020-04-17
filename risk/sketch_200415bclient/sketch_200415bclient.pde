@@ -216,7 +216,7 @@ void setup() {
   map = loadImage("Risk_game_map.png");
   image(map, 0, 0, width,height-120);
   delay(100);
-  frameRate(5); // Slow it down a little
+  frameRate(10); // Slow it down a little
   // Connect to the server’s IP address and port­
   c = new Client(this, "192.168.0.178", 12345); // Replace with your server’s IP and port
   c.write("joined "+userName+"\n"); // joined

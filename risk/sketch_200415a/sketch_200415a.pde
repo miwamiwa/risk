@@ -65,7 +65,7 @@ void setup() {
   size(450, 255);
   background(204);
   stroke(0);
-  frameRate(10); // Slow it down a little
+  frameRate(5); // Slow it down a little
   s = new Server(this, 12345);  // Start a simple server on a port
 } 
 

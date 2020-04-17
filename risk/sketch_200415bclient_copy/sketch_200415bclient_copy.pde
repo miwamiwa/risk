@@ -1,4 +1,4 @@
-String userName = "user2";
+String userName = "user1";
 
 String[] territoryNames = {
   "Alaska",
@@ -216,7 +216,7 @@ void setup() {
   map = loadImage("Risk_game_map.png");
   image(map, 0, 0, width,height-120);
   delay(100);
-  frameRate(10); // Slow it down a little
+  frameRate(5); // Slow it down a little
   // Connect to the server’s IP address and port­
   c = new Client(this, "192.168.0.178", 12345); // Replace with your server’s IP and port
   c.write("joined "+userName+"\n"); // joined
@@ -509,7 +509,7 @@ void runGamePhase(){
       if(comboPlaced) combotxt="\nyou can't place any more combos this turn";
       addRemoveTroopsOnClick(3); 
       infoRect(
-        "your turn. PLACE TROOPS! "+placeableTroops+ " units left."
+        "your turn. PLACE TROOPS! "+placeableTroops+ " dudes left."
         +"\nLEFT-CLICK on a country to add, RIGHT-CLICK to remove."
         +"\nPRESS R for ready (continue to battle phase)"
         + combotxt
@@ -715,7 +715,7 @@ void runGamePhase(){
          if(lastDefenseRoll[i]!=-1)  defDiceString+=lastDefenseRoll[i]+" ";
          }
          results = "attack rolls: "+atkDiceString+". defense rolls: "+defDiceString+". "
-         +"\n defense units lost: "+defenderTileDamage+". own units lost: "+attackerTileDamage
+         +"\n defense dudes lost: "+defenderTileDamage+". own dudes lost: "+attackerTileDamage
          +continueTxt;
          
          infoRect(results);
@@ -733,8 +733,8 @@ void runGamePhase(){
            c.write("lesstroops\n");
           }
            infoRect(
-          "LEFT CLICK to add units to your new territory, "+territoryNames[attackTarget]
-          +"\nRIGHT CLICK to remove units."
+          "LEFT CLICK to add dudes to your new territory, "+territoryNames[attackTarget]
+          +"\nRIGHT CLICK to remove dudes."
           +"\nPRESS R to confirm troop movement."
           );
           pressRforReturn();
@@ -785,7 +785,7 @@ void runGamePhase(){
            defDiceString+=lastDefenseRoll[i]+" ";
          }
          results = "attack rolls: "+atkDiceString+"; defense rolls: "+defDiceString+". "
-         +"\n units lost: "+defenderTileDamage+". enemy units lost: "+attackerTileDamage
+         +"\n dudes lost: "+defenderTileDamage+". enemy dudes lost: "+attackerTileDamage
          +"\nwaiting for attacker to continue";
          
          infoRect(results);
@@ -814,7 +814,7 @@ void runGamePhase(){
            defDiceString+=lastDefenseRoll[i]+" ";
          }
          results = "attack rolls: "+atkDiceString+"; defense rolls: "+defDiceString+". "
-         +"\n defender units lost: "+defenderTileDamage+". attacker units lost: "+attackerTileDamage
+         +"\n defender dudes lost: "+defenderTileDamage+". attacker dudes lost: "+attackerTileDamage
          +"\nwaiting for attacker to continue";
          
          infoRect(results);
@@ -922,7 +922,7 @@ void runTroopAssignmentPhase(){
    String readystring = "NOT ";
    if(playerReady) readystring = "";
    infoRect(
-     "troop placement phase! You have "+placeableTroops+ " units left to place."
+     "troop placement phase! You have "+placeableTroops+ " dudes left to place."
      +"\nLEFT-CLICK on a country to add, RIGHT-CLICK to remove."
      +"\nPRESS R to say you're ready (PRESS R again to cancel)."
      +"\ngame starts when everyone is ready. you are currently marked as "+readystring+"ready"

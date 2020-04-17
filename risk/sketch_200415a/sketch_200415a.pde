@@ -175,7 +175,7 @@ void dataIn(){
          }
          
        }
-       else if(data[1]==2){
+       if(data[1]==2){
          troopsPlaced = true;
          delay(100);
          s.write("choicephasestart\n");

@@ -1,4 +1,4 @@
-String userName = "notcooluser";
+String userName = "user1";
 
 String[] territoryNames = {
   "Alaska",
@@ -611,6 +611,7 @@ void runGamePhase(){
     
      if(enterPressed()&&tacticalMoveFrom!=-1&&tacticalMoveTo!=-1&&!tacticalTargetConfirmed){
        tacticalTargetConfirmed=true;
+       delay(200);
      } // press enter to confirm country selection, then
      else if(enterPressed()&&!choiceMade){
        choiceMade = true;

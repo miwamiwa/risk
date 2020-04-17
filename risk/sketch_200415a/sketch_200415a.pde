@@ -103,6 +103,7 @@ void checkForEveryoneAndStart(){
     
  //   players.append("playertwoooo");
   //  players.append("playerhreet");
+  delay(1000);
    gameStarted = true; 
    gamePhase="initial troop assignment";
    println("gameload");

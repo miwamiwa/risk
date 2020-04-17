@@ -1076,6 +1076,8 @@ void initGame(){
  //  println(tileassignment);
  gamePhase="initial troop assignment";
  tileInfoPending = false;
+ 
+ delay(50);
 }
 
 void drawTroops(){

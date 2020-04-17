@@ -34,8 +34,8 @@ int attacker =0;
 int defender =0;
 IntList deck = new IntList();
 boolean player1InitDone = false;
-boolean player2InitDone = true;
-boolean player3InitDone = true;
+boolean player2InitDone = false;
+boolean player3InitDone = false;
 
 int[] placeableTroops = {21,21,21};
 IntList[] playerTiles = {
@@ -99,10 +99,10 @@ void draw() {
 // wait for all the players to show up then start the game
 
 void checkForEveryoneAndStart(){
-  if(players.size()==2){
+  if(players.size()==3){
     
-    players.append("playertwoooo");
-    players.append("playerhreet");
+ //   players.append("playertwoooo");
+  //  players.append("playerhreet");
    gameStarted = true; 
    gamePhase="initial troop assignment";
    println("gameload");
@@ -129,7 +129,8 @@ void troopPlacementIsDone(){
   turnOrder.shuffle();
 
   s.write("gamestart\n");
-  setupTurn(0,-1); // CHANGE THIS LATER PLS PLS
+  setupTurn( turnOrder.get(0),-1); // CHANGE THIS LATER PLS PLS
+  
 }
 
 void dataIn(){
@@ -227,7 +228,8 @@ void dataIn(){
         
         delay(10);
         // CHANGE THIS LATER
-       setupTurn(1,0);
+        turn++;
+       setupTurn(turnOrder.get(turn),0);
       }
       
       if(match(sdata[0],"tacticaladd")!=null){

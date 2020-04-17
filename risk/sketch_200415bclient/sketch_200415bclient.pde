@@ -1,4 +1,4 @@
-String userName = "coolusername";
+String userName = "notcooluser";
 
 String[] territoryNames = {
   "Alaska",
@@ -360,6 +360,7 @@ void dataIn(){
       else canContinue = false;
       }
       else {
+        println("conquest!");
          //territory conquered
          battlePhase="conquer phase";
          conqueredSomething = true;

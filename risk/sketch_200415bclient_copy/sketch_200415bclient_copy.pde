@@ -159,7 +159,7 @@ String[] sdata;
 //boolean canClick = true;
 String gamePhase = "pending";
 boolean comboPlaced = false;
-
+int lastTacticalMoveTo=-1;
 boolean joined = false;
 int clientId;
 int[] tileassignment = new int[42];
@@ -657,15 +657,17 @@ void runGamePhase(){
       if(tacticalMoveTo==-1){
         if(isUserTile(targetTile)&&isNeighbourTile(tacticalMoveFrom,targetTile)){
           tacticalMoveTo=targetTile;
+          lastTacticalMoveTo = targetTile;
         }
       }
       else{
         if(
         targetTile!=tacticalMoveFrom
         &&isUserTile(targetTile)
-        &&isNeighbourTile(tacticalMoveTo,targetTile)
+        &&isNeighbourTile(lastTacticalMoveTo,targetTile)
         ){
           tacticalMoveTo=targetTile;
+          lastTacticalMoveTo=targetTile;
         }
       }
     }
@@ -985,7 +987,8 @@ void pressBforBack(){
  }
  
  void pressRforReady(int phase){
-   if(keyPressed && ( key == 'r' || key == 'R' )){
+   if(keyPressed && ( key == 'r' || key == 'R' )&&!choiceMade){
+     choiceMade=true;
      if(!playerReady){
        playerReady = true;
        c.write(phase+" 2 "+clientId+"\n");// ready message

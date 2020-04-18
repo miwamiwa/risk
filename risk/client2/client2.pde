@@ -1,143 +1,11 @@
-String[] territoryNames = {
-  "Alaska",
-  "Alberta",
-  "Central America",
-  "Eastern United States",
-  "Greenland",
-  "Northwest Nerritory",
-  "Ontario",
-  "Quebec",
-  "Western United States",
-  "Argentina",
-  "Brazil",
-  "Peru",
-  "Venezuela",
-  "Great Britain",
-  "Iceland",
-  "Northern Europe",
-  "Scandinavia",
-  "Southern Europe",
-  "Ukraine",
-  "Western Europe",
-  "Congo",
-  "East Africa",
-  "Egypt",
-  "Madagascar",
-  "North Africa",
-  "South Africa",
-  "Afghanistan",
-  "China",
-  "India",
-  "Irkutsk",
-  "Japan",
-  "Kamchatka",
-  "Middle East",
-  "Mongolia",
-  "Siam",
-  "Siberia",
-  "Ural",
-  "Yakutsk",
-  "Eastern Australia",
-  "Indonesia",
-  "New Guinea",
-  "Western Australia"
-};
+String userName = "cooldesktop";
 
 
-float[] hues = {
 
-255.0,106.0,0.0,
-255.0,255.0,0.0,
-255.0,255.0,128.0,
-128.0,128.0,0.0,
-153.0,127.0,0.0,
-206.0,172.0,0.0,
-182.0,255.0,0.0,
-216.0,139.0,15.0,
-80.0,80.0,39.0,
-255.0,0.0,0.0,
-128.0,64.0,64.0,
-128.0,0.0,0.0,
-255.0,128.0,128.0,
-255.0,216.0,0.0,
-255.0,128.0,0.0,
-128.0,64.0,0.0,
-174.0,87.0,0.0,
-255.0,145.0,91.0,
-183.0,95.0,47.0,
-0.0,64.0,128.0,
-137.0,86.0,255.0,
-0.0,0.0,255.0,
-0.0,128.0,255.0,
-55.0,91.0,198.0,
-0.0,0.0,128.0,
-71.0,117.0,255.0,
-128.0,255.0,128.0,
-0.0,128.0,64.0,
-0.0,128.0,128.0,
-128.0,255.0,0.0,
-3.0,25.0,18.0,
-10.0,73.0,52.0,
-0.0,128.0,0.0,
-0.0,64.0,0.0,
-10.0,150.0,40.0,
-25.0,181.0,129.0,
-35.0,255.0,181.0,
-15.0,112.0,80.0,
-64.0,0.0,64.0,
-128.0,0.0,255.0,
-255.0,0.0,255.0,
-128.0,0.0,64.0,
-};
 String cardText = "";
-int[] troopNumLocations = {
-  71,71,
-  130,112,
-  122,247,
-  197,183,
- 417,36,
-  165,66,
-217,118,
-290,115,
-110,170,
 
-  283,503,
-323,408,
-266,429,
-254,328,
-
-626,358,
-703,322,
-628,234,
-733,445,
-536,275,
-632,449,
-503,120,
-475,82,
-588,123,
-596,79,
-623,160,
-670,112,
-540,160,
- 786,156,
-936,205,
-856,251,
-938,114,
-1101,189,
-1057,72,
-702,207,
-944,153,
-963,284,
-847,71,
-779,90,
-
-944,69,
-1124,477,
-1001,357,
-1120,387,
-1027,481,
-};
-
+int[] lastAttackRoll = new int[3];
+int[] lastDefenseRoll = new int[2];
 PImage img;
 PImage map;
 // 2B: Shared drawing canvas (Client)
@@ -152,7 +20,7 @@ String[] sdata;
 //boolean canClick = true;
 String gamePhase = "pending";
 boolean comboPlaced = false;
-String userName = "coolusername";
+int lastTacticalMoveTo=-1;
 boolean joined = false;
 int clientId;
 int[] tileassignment = new int[42];
@@ -204,11 +72,11 @@ int  defenderTileDamage =0;
 
 void setup() { 
   
-  size(1227,628);
+  size(1227,748);
   img = loadImage("Risk_game_map.png");
   map = loadImage("Risk_game_map.png");
-  image(map, 0, 0, width,height);
-  delay(100);
+  image(map, 0, 0, width,height-120);
+  delay(1000);
   frameRate(10); // Slow it down a little
   // Connect to the server’s IP address and port­
   c = new Client(this, "127.0.0.1", 12345); // Replace with your server’s IP and port
@@ -329,6 +197,16 @@ void dataIn(){
        counter++;
       }
       
+      for(int i=0; i<3; i++){
+       if(i<atkDiceList.length) lastAttackRoll[i]=atkDiceList[i];
+       else lastAttackRoll[i]=-1;
+      }
+      
+      for(int i=0; i<2; i++){
+       if(i<defDiceList.length) lastDefenseRoll[i]=defDiceList[i];
+       else lastDefenseRoll[i]=-1;
+      }
+      
       startindex+=defDiceNum;
       attackerTileDamage = data[startindex];
       defenderTileDamage = data[startindex+1];
@@ -343,6 +221,7 @@ void dataIn(){
       else canContinue = false;
       }
       else {
+        println("conquest!");
          //territory conquered
          battlePhase="conquer phase";
          conqueredSomething = true;
@@ -457,302 +336,7 @@ void getCard( int card ){
 }
 
 
-void runGamePhase(){
- 
-  drawTroops();
-  
- if(isTurnToPlay){
-   
-  switch(turnPhase){
-    
-    case "combo placement":  
-    
-      StringList combos = getAvailableCombos();
-      String combostring = "";
-      for(int i=0; i<combos.size(); i++){
-       combostring+=i+": "+combos.get(i)+". "; 
-      }
-      
-      if(keyPressed&&(key=='r'||key=='R')){
-        turnPhase = "reinforcement phase";
-      }
-      
-      infoRect("Press number key to select combo. Press R to return.");
-      textSize(15);
-      textLeading(15);
-      text("\n"+combostring,410,height-95,600,120);
-      pressKeyToSelectCombo(combos);
-      
-     break;
-    
-    case "reinforcement phase":
-         // refresh troop numbers
-      String combotxt = "\npress enter to play a combo";
-      if(comboPlaced) combotxt="\nyou can't place any more combos this turn";
-      addRemoveTroopsOnClick(3); 
-      infoRect(
-        "your turn. place troops! "+placeableTroops+ " left."
-        +"\nleft-click on a country to add, right-click to remove."
-        +"\npress r for ready"
-        + combotxt
-      ); 
-      if(enterPressed()&&!comboPlaced) turnPhase="combo placement";
-      pressRforReady(3);
-      
-    break;
-    
-    case "choice phase": 
-    
-    pressEtoEndTurn();
-    String endtxt = "\npress E to end turn (tactical move).";
-    if(conqueredSomething) endtxt = "\npress E to draw a card and end you turn (tactical move)";
-    else endtxt += "\nYou must conquer at least 1 territory to draw a card";
-    if(attackingCountry==-1){
-      
-      infoRect( "click on a country to attack from." +endtxt );
-     // goBackButton();
-       // pressBforBack();
-      if(mousePressed&&mouseButton==LEFT){
-      int tile = getTile();
-    //  println("tile "+tile);
-      if(tile!=-1){
-        if(isUserTile(tile)&&troopsOnTile[tile]>1){
-         attackingCountry = tile;
-        }
-      }
-    }
-    }
-    else if(attackTarget==-1){
-      int atkdice = getAvailableDice("attacking");
-      infoRect(
-      "pick a country to attack from "+attackingCountry
-      +"\nattacking country can roll "+atkdice+" dice."
-      +"\npress b to go back one step"  +endtxt 
-      );
-     // goBackButton();
-     pressBforBack();
-     
-      if(mousePressed&&mouseButton==LEFT){
-        
-      int tile = getTile();
-      if(tile!=-1){
-        boolean usertile = isUserTile(tile);
-        if(isNeighbourTile(attackingCountry,tile)&&!usertile){
-         attackTarget = tile;
-        } 
-        else if(usertile&&troopsOnTile[tile]>1){
-         attackingCountry = tile;
-        }
-      }
-      
-    }
-    }
-    else if(attackTarget!=-1){
-      int atkdice = getAvailableDice("attacking");
-      int defdice = getAvailableDice("defending");
-     // goBackButton();
-     pressBforBack();
-      infoRect(
-        "press enter to attack "+attackTarget+" from "+attackingCountry
-        +"\nattacking country can roll "+atkdice+"dice. "
-        +"\ndefending country can roll "+defdice+". "
-        +"\npress b to go back"
-      );
-      if(enterPressed()){
-        // ready to attack
-        println("ready to attack!!");
-        c.write("4 "+attackingCountry+" "+attackTarget+"\n");
-      }
-  }
-      
-    break;
-    
-    case "tactical move phase": 
-    
-    String tacticalText="tactical move. press r to cancel selection.";
-    String nextline = "";
-    if(!tacticalTargetConfirmed){
-      if(tacticalMoveFrom==-1) nextline = "\nselect a first country";
-      else if (tacticalMoveTo==-1) nextline = "\nselect a neighbouring country"
-      +"\n1st country: "+territoryNames[tacticalMoveFrom];
-      else nextline = "press enter to confirm country selection (can't undo), \nor click to select another neighbour of the 2nd country"
-      +"\n1st country: "+territoryNames[tacticalMoveFrom]+". 2nd country: "+territoryNames[tacticalMoveTo];
-    }
-    else {
-      tacticalText = "tactical move.";
-      nextline="\nright click to add to first country, left click to add to second country"
-      +"\n1st country: "+territoryNames[tacticalMoveFrom]+". 2nd country: "+territoryNames[tacticalMoveTo];
-    }
-    
-     if(enterPressed()&&tacticalMoveFrom!=-1&&tacticalMoveTo!=-1&&!tacticalTargetConfirmed){
-       tacticalTargetConfirmed=true;
-     } // press enter to confirm country selection, then
-     else if(enterPressed()){
-       c.write("tacticalphaseover\n"); // press enter to finish turn
-     }
-     
-     if(keyPressed&&(key=='r'||key=='R')){ // press r to go back a step
-       if(tacticalTargetConfirmed) tacticalTargetConfirmed=false;
-       else if(tacticalMoveTo!=-1) tacticalMoveTo=-1;
-       else if(tacticalMoveFrom!=-1) tacticalMoveFrom=-1;
-     }
-     
-     tacticalText+=nextline;
-     infoRect(tacticalText);
-     if(tacticalTargetConfirmed){
-       if(mousePressed){
-        if(mouseButton==LEFT){
-          c.write("tacticaladd "+tacticalMoveFrom+" "+tacticalMoveTo+"\n");
-        }
-        else if(mouseButton==RIGHT){
-          c.write("tacticalremove "+tacticalMoveFrom+" "+tacticalMoveTo+"\n");
-        }
-       }
-     }
-     else {
-       
-    if(mousePressed){
-      int targetTile=-1;
-      targetTile = getTile();
-      if(targetTile!=-1){
-      if(tacticalMoveFrom==-1){
-      if(isUserTile(targetTile)){
-        tacticalMoveFrom=targetTile;
-      }
-    }
-    else {
-      if(tacticalMoveTo==-1){
-        if(isUserTile(targetTile)&&isNeighbourTile(tacticalMoveFrom,targetTile)){
-          tacticalMoveTo=targetTile;
-        }
-      }
-      else{
-        if(
-        targetTile!=tacticalMoveFrom
-        &&isUserTile(targetTile)
-        &&isNeighbourTile(tacticalMoveTo,targetTile)
-        ){
-          tacticalMoveTo=targetTile;
-        }
-      }
-    }
-    }
-    }
-     }
-    
-    
-    
-    
-    break;
-    
-    case "attack phase": 
-    //   println("attackphase");
-       
-       if(battlePhase=="attackerchoice"){
-     //    println("attackerchoice");
-         if(availableDice>0) pressNumToPickDice('1');
-         if(availableDice>1) pressNumToPickDice('2');
-         if(availableDice>2) pressNumToPickDice('3');
-         
-         infoRect(
-         "pick a number of dice to roll (press 1,2,3)"
-         + "\nmax available dice: "+availableDice
-         );
-       }
-       else if(battlePhase=="defenderchoice"){
-      
-         infoRect("defender is picking his dice");
-       }
-       else if(battlePhase=="result phase"){
-         String continueTxt = "not enough troops to continue."
-         + "\npress r to return to fight selection";
-         
-         if(canContinue) continueTxt = "press enter to continue fighting"
-         + "\n press r to return to fight selection";
-         
-         infoRect(
-         "you lost "+attackerTileDamage+" troops. \n"+continueTxt
-         );
-         pressRforReturn();
-         if(enterPressed()){
-          c.write("continuebattle\n"); 
-         }
-       }
-        else if(battlePhase=="conquer phase"){
-          
-          if(mousePressed&&mouseButton==LEFT){
-           c.write("moretroops\n");
-          }
-          else if(mousePressed&&mouseButton==RIGHT){
-           c.write("lesstroops\n");
-          }
-          pressRforReturn();
-          infoRect(
-          "left click to add troops to the new territory."
-          +"\nright click to remove."
-          +"\npress R to finish troop movement."
-          );
-          
-        }
-    break;
-    
-   // case "card phase": break; not a phase: on turn end
-   // you just get a notifications that says you got a card or not
-   // ..should make separate card menu instead
-  }
- }
- else {
-   // IF NOT YOUR TURN TO PLAY 
-   if(turnPhase=="reinforcement phase"){
-     drawTroops();  
-   }
-   if(turnPhase=="defense phase"){
-     
-     if(battlePhase=="attackerchoice"){
-         infoRect("you're under attack! waiting on attacker.");
-       }
-     else if(battlePhase=="defenderchoice"){
-         if(availableDice>0) pressNumToPickDice('1');
-         if(availableDice>1) pressNumToPickDice('2');
-         if(availableDice>2) pressNumToPickDice('3');
-         
-         infoRect(
-         "pick a number of dice to roll (press 1,2,3)"
-         + "\nmax available dice: "+availableDice
-         + "\nattacker chose "+attackingDice+" dice/die"
-         );
-       }
-       else if(battlePhase=="result phase"){
-         
-         infoRect("you lost "+defenderTileDamage+" troops. \nwaiting for attacker to continue");
-       }
-       else if(battlePhase=="conquer phase"){
-         infoRect("you lost the fight! attacker is moving in.");
-        }
-       
-   }
-   else if(turnPhase=="viewbattle phase"){
-     
-     if(battlePhase=="attackerchoice"){
-         infoRect("attacker must pick a number of dice");
-       }
-       else if(battlePhase=="defenderchoice"){
-         infoRect("defender must pick a number of dice");
-       }
-       else if(battlePhase=="result phase"){
-         infoRect("fight is over.");
-       }
-       else if(battlePhase=="conquer phase"){
-         infoRect("attacker won!");
-        }
-     else infoRect("game is running. \nthere's a battle happening. not you tho."); 
-   }
-   else {
-     infoRect("game is running. not ur turn tho"); 
-   }
-   
- }
-}
+
 
 void displayCards(){
  fill(245);
@@ -842,12 +426,13 @@ void pressNumToPickDice(char num){
 void runTroopAssignmentPhase(){
   
    drawTroops(); // refresh troop numbers
-   String readystring = "not ";
+   String readystring = "NOT ";
    if(playerReady) readystring = "";
    infoRect(
-     "troop placement phase. Troops left: "+placeableTroops
-     +"\nleft-click on a country to add, right-click to remove."
-     +"\npress r for ready. you are currently marked as "+readystring+"ready"
+     "troop placement phase! You have "+placeableTroops+ " dudes left to place."
+     +"\nLEFT-CLICK on a country to add, RIGHT-CLICK to remove."
+     +"\nPRESS R to say you're ready (PRESS R again to cancel)."
+     +"\ngame starts when everyone is ready. you are currently marked as "+readystring+"ready"
    );
    
     pressRforReady(2);
@@ -898,7 +483,9 @@ void pressBforBack(){
  }
  
  void pressRforReturn(){
-   if(keyPressed&&(key=='r'||key=='R')){
+   if(keyPressed&&(key=='r'||key=='R')&&!choiceMade){
+     choiceMade = true;
+     turnPhase = "choice phase";
      c.write("returntochoicephase\n");
      attackingCountry=-1;
      attackTarget=-1;
@@ -907,7 +494,8 @@ void pressBforBack(){
  }
  
  void pressRforReady(int phase){
-   if(keyPressed && ( key == 'r' || key == 'R' )){
+   if(keyPressed && ( key == 'r' || key == 'R' )&&!choiceMade){
+     choiceMade=true;
      if(!playerReady){
        playerReady = true;
        c.write(phase+" 2 "+clientId+"\n");// ready message
@@ -923,14 +511,16 @@ void pressBforBack(){
 
 void infoRect(String input){
   fill(245);
-    rect(400,height-100,600,120);
+    rect(400,height-180,770,120);
       fill(45);
       textSize(20);
       textLeading(20);
-  text(input,410,height-75);
+  text(input,410,height-155);
     
 }
 void drawPlayerInfo(){
+  fill(225);
+  rect(15,370,200,200);
   textSize(24);
   fill(teamColors[0]);
   text(playerNames[0], 20, 400);
@@ -944,13 +534,13 @@ void drawPlayerInfo(){
   textSize(22);
   
   fill(teamColors[0]);
-  text("countries "+playerTiles[0].size(), 20, 425);
+  text("countries: "+playerTiles[0].size(), 20, 425);
   
   fill(teamColors[1]);
-  text("countries "+playerTiles[1].size(), 20, 475);
+  text("countries: "+playerTiles[1].size(), 20, 475);
   
   fill(teamColors[2]);
-  text("countries "+playerTiles[2].size(), 20, 525); 
+  text("countries: "+playerTiles[2].size(), 20, 525); 
   
 
 }
@@ -993,6 +583,8 @@ void initGame(){
  //  println(tileassignment);
  gamePhase="initial troop assignment";
  tileInfoPending = false;
+ 
+ delay(50);
 }
 
 void drawTroops(){
@@ -1049,56 +641,6 @@ boolean isUserTile( int tile ){
  return result;
 }
 
-int[] neighbourTiles = { 
-  //NA 1=0
-  31,1,5, -1,-1,-1,//0(NA1)
-  0,5,6,8,   -1,-1,//1(NA2)
-  3,8,12, -1,-1,-1,//2(NA3)
-  2,8,6,7,   -1,-1,//3(NA4)
-  20,7,6,5,  -1,-1,//4(NA5)
-  0,1,6,  -1,-1,-1,//5(NA6)
-  5,4,7,1,8,3,     //6(NA7)
-  3,6,4,  -1,-1,-1,//7(NA8)
-  1,6,3,2,   -1,-1,//8(NA9)
-  //SA 1=9
-  10,11, -1,-1,-1,-1,//9(SA1)
-  9,11,12,17,  -1,-1,//10(SA2)
-  9,10,12,  -1,-1,-1,//11(SA3)
-  10,11,2,  -1,-1,-1,//12(SA4)
-  //AF 1=13
-  14,17,18, -1,-1,-1, //13(AF1)
-  13,15,16,17,18,32,  //14(AF2)
-  14,17,32,23, -1,-1, //15(AF3)
-  14,18, -1,-1,-1,-1, //16(AF4)
-  13,14,15,10,25,-1,  //17(AF5)
-  13,14,16, -1,-1,-1, //18(AF6)
-  //EU 1=19
-  20,21,22,25, -1,-1, //19(EU1)
-  19,22,4,  -1,-1,-1, //20(EU2)
-  19,22,23,24,25, -1, //21(EU3)
-  19,20,21,24, -1,-1, //22(EU4)
-  21,24,25,32,15, -1, //23(EU5)
-  21,22,23,26,32,36,  //24(EU6)
-  19,21,23,17, -1,-1, //25(EU7)
-  //AS 1=26
-  27,28,32,36,24, -1,//26(AS1)
-  26,28,33,34,35,36, //27(AS2)
-  26,27,32,24, -1,-1,//28(AS3)
-  31,33,35,37, -1,-1,//29(AS4)
-  31,33, -1,-1,-1,-1,//30(AS5)
-  0,29,30,33,37,  -1,//31(AS6)
-  26,28,14,15,23,24, //32(AS7)
-  27,29,30,31,35, -1,//33(AS8)
-  27,28,39, -1,-1,-1,//34(AS9)
-  27,29,33,36,37, -1,//35(AS10)
-  26,27,35,24, -1,-1,//36(AS11)
-  29,31,35, -1,-1,-1,//37(AS12)
-  //OC 1=38
-  40,41, -1,-1,-1,-1,//38(oc1)
-  40,41,34, -1,-1,-1,//39(oc2)
-  38,39,41, -1,-1,-1,//40(oc3)
-  38,39,40, -1,-1,-1,//41(oc4)
-};
 
 boolean isNeighbourTile (int tile,int potentialneighbour){
    boolean result = false;
@@ -1159,12 +701,12 @@ boolean hasCombo(int i1, int i2, int i3, IntList input){
   
   int index2 =-1;
   for(int i=0; i<input.size(); i++){
-   if(input.get(i)==i2&&input.get(i)!=index1) index2=i; 
+   if(input.get(i)==i2&&i!=index1) index2=i; 
   }
   
   int index3 =-1;
   for(int i=0; i<input.size(); i++){
-   if(input.get(i)==i3&&input.get(i)!=index2&&input.get(i)!=index1) index3=i; 
+   if(input.get(i)==i3&&i!=index2&&i!=index1) index3=i; 
   }
   
   if(index1!=-1&&index2!=-1&&index3!=-1) result = true;

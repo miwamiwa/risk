@@ -1,11 +1,11 @@
-String userName = "cooldesktop";
+String userName = "sovietlaptop";
 
 
 
 String cardText = "";
 
 int[] lastAttackRoll = new int[3];
-int[] lastDefenseRoll = new int[2];
+int[] lastDefenseRoll = new int[3];
 PImage img;
 PImage map;
 // 2B: Shared drawing canvas (Client)
@@ -70,6 +70,8 @@ boolean tacticalTargetConfirmed =false;
 int attackerTileDamage = 0;
 int  defenderTileDamage =0;
 
+int comboMarker = 0;
+
 void setup() { 
   
   size(1227,748);
@@ -97,180 +99,7 @@ void draw() {
   } 
 }
 
-void dataIn(){
-  //println(dataIn);
-  choiceMade = false;
-  if(gamePhase=="pending"){
-     //received player id on join 
-  if(data[0]==1&&!joined){
-   joined=true; 
-   clientId = data[1];
-   println("player id is "+clientId);
-  }
-  //received signal for game load 
-  if(match(sdata[0],"gameload")!=null){
-    tileInfoPending = true;
-    println("pending");
-  }
-   // received tile info on game load 
-    if(tileInfoPending){
-  initGame();
-  }
-  }
-  else if(gamePhase=="initial troop assignment"){
-    
-   if(match(sdata[0],"troops")!=null){
-     updateReinforcementsFromServer();
-   }
-   else if(match(sdata[0],"gamestart")!=null){
-     gamePhase = "game";
-     placeableTroops = 0;
-   }
-  }
-  // GAME PHASE SERVER INPUTS 
-  else if(gamePhase=="game"){
-    
-    if(match(sdata[0],"turnstart")!=null){
-      turnStart(data[1]);
-    }
-    
-    else if(match(sdata[0],"troops")!=null){
-      updateReinforcementsFromServer();
-    }
-    
-    else if(match(sdata[0],"attackphasestart")!=null){
-      turnPhase="attack phase";
-    }
-    
-    else if(match(sdata[0],"tacticalchange")!=null){
-      troopsOnTile[data[1]]=data[2];
-      troopsOnTile[data[3]]=data[4];
-    }
-    
-    else if(match(sdata[0],"choicephasestart")!=null){
-      turnPhase="choice phase";
-      attackingCountry=-1;
-      attackTarget = -1;
-      playerReady = false;
-      readyTxt = "READY";
-    }
-    
-    else if(match(sdata[0],"battlestart")!=null){
-      
-      println("battle start");
-      battlePhase="attackerchoice";
-      attackingCountry = data[1];
-      attackTarget = data[2];
-      attacker = getTileOwner( data[1] );
-      defender = getTileOwner( data[2] );
-      
-      if(isUserTile(data[1])) startAttackPhase();
-      else if(isUserTile(data[2])) startDefensePhase();
-      else turnPhase="viewbattle phase";
-    }
-    
-    else if(match(sdata[0],"attackdice")!=null){
-      
-      attackingDice = data[1];
-      battlePhase="defenderchoice";
-      println("defender start");
-      if(turnPhase=="defense phase") availableDice = getAvailableDice("defending");
-    }
-    
-    else if(match(sdata[0],"battleresult")!=null){
-      
-      int atkDiceNum = data[1];
-      int defDiceNum = data[2];
-      
-      int[] atkDiceList = new int[ atkDiceNum ];
-      int startindex =3;
-      int counter=0;
-      for(int i=startindex; i<startindex+atkDiceNum; i++){
-       atkDiceList[counter]=data[i];
-       counter++;
-      }
-      counter=0;
-      startindex+=atkDiceNum;
-      int[] defDiceList = new int[ defDiceNum ];
-      for(int i=startindex; i<startindex+defDiceNum; i++){
-       defDiceList[counter]=data[i];
-       counter++;
-      }
-      
-      for(int i=0; i<3; i++){
-       if(i<atkDiceList.length) lastAttackRoll[i]=atkDiceList[i];
-       else lastAttackRoll[i]=-1;
-      }
-      
-      for(int i=0; i<2; i++){
-       if(i<defDiceList.length) lastDefenseRoll[i]=defDiceList[i];
-       else lastDefenseRoll[i]=-1;
-      }
-      
-      startindex+=defDiceNum;
-      attackerTileDamage = data[startindex];
-      defenderTileDamage = data[startindex+1];
-      
-      troopsOnTile[ attackingCountry ] -= attackerTileDamage;
-      troopsOnTile[ attackTarget ] -= defenderTileDamage;
-      
-      battlePhase = "result phase";
-      
-      if(troopsOnTile[attackTarget]>0){
-        if(troopsOnTile[attackingCountry]>1) canContinue = true;
-      else canContinue = false;
-      }
-      else {
-        println("conquest!");
-         //territory conquered
-         battlePhase="conquer phase";
-         conqueredSomething = true;
-         c.write("conquest\n");
-         troopsOnTile[attackingCountry]--;
-         troopsOnTile[attackTarget]=1;
-         println("set color: "+teamColors[clientId]);
-         println("target: "+attackTarget);
-         setTileColor( teamColors[attacker], attackTarget );
-         updatePixels();
-         int index =-1;
-         for(int i=0; i<playerTiles[defender].size(); i++){
-          if(playerTiles[defender].get(i)==attackTarget) index=i;
-         }
-         
-         playerTiles[defender].remove(index);
-         playerTiles[attacker].append(attackTarget);
-      }
-      
-    }
-    
-    else if(match(sdata[0],"backtochoice")!=null){
-      turnPhase="choice phase";
-    }
-    
-    else if(match(sdata[0],"addtonewtile")!=null){
-      troopsOnTile[attackingCountry]--;
-      troopsOnTile[attackTarget]++;
-    }
-    
-    else if(match(sdata[0],"removefromnewtile")!=null){
-      troopsOnTile[attackingCountry]++;
-      troopsOnTile[attackTarget]--;
-    }
-    else if(match(sdata[0],"comboamount")!=null){
-      if(turnPhase=="combo placement"){
-        placeableTroops+=data[1];
-        turnPhase="reinforcement phase";
-      }
-    }
-    
-    else if(match(sdata[0],"tacticalmove")!=null){
-     turnPhase="tactical move phase";
-     tacticalMoveFrom =-1;
-     tacticalTargetConfirmed = false;
-     tacticalMoveTo =-1;
-    }
-  }
-}
+
 
 void runGame(){
   
@@ -668,47 +497,4 @@ int getTileOwner(int tile){
  else if(playerTiles[1].hasValue(tile)) result =1;
  else if(playerTiles[2].hasValue(tile)) result =2;
  return result;
-}
-
-StringList getAvailableCombos(){
- StringList combos = new StringList();
- if(hasCombo(0,0,0,cards)){ combos.append("infantry,infantry,infantry"); }
- if(hasCombo(1,1,1,cards)) combos.append("horse,horse,horse");
- if(hasCombo(2,2,2,cards)) combos.append("canon,canon,canon");
- if(hasCombo(0,1,2,cards)) combos.append("infantry,horse,canon");
- if(hasCombo(0,0,3,cards)) combos.append("infantry,infantry,wildcard");
- if(hasCombo(0,3,3,cards)) combos.append("infantry,wildcard,wildcard");
- if(hasCombo(3,3,3,cards)) combos.append("wildcard,wildcard,wildcard");
- if(hasCombo(1,1,3,cards)) combos.append("horse,horse,wildcard");
- if(hasCombo(1,3,3,cards)) combos.append("horse,wildcard,wildcard");
- if(hasCombo(2,2,3,cards)) combos.append("canon,canon,wildcard");
- if(hasCombo(2,3,3,cards)) combos.append("canon,wildcard,wildcard");
- if(hasCombo(0,1,3,cards)) combos.append("infantry,horse,wildcard");
- if(hasCombo(0,2,3,cards)) combos.append("infantry,canon,wildcard");
- if(hasCombo(1,2,3,cards)) combos.append("horse,canon,wildcard");
- return combos;
-}
-
-boolean hasCombo(int i1, int i2, int i3, IntList input){
-  
-  boolean result=false;
-  if(!input.hasValue(i1)||!input.hasValue(i2)||!input.hasValue(i3)) return false;
-  
-  int index1 =-1;
-  for(int i=0; i<input.size(); i++){
-   if(input.get(i)==i1) index1=i; 
-  }
-  
-  int index2 =-1;
-  for(int i=0; i<input.size(); i++){
-   if(input.get(i)==i2&&i!=index1) index2=i; 
-  }
-  
-  int index3 =-1;
-  for(int i=0; i<input.size(); i++){
-   if(input.get(i)==i3&&i!=index2&&i!=index1) index3=i; 
-  }
-  
-  if(index1!=-1&&index2!=-1&&index3!=-1) result = true;
-  return result;
 }

@@ -49,14 +49,14 @@ void diceBattle(){
   int secondB=-1;
   int valB=0;
   for(int i=0; i<defenseRolls.size(); i++){
-    valB = attackRolls.get(i);
+    valB = defenseRolls.get(i);
     if(valB>firstB){
       secondB=firstB;
       firstB=valB;
     }
-    else if(valB>secondB) secondA=valB;
+    else if(valB>secondB) secondB=valB;
   }
-
+  
   int attackingTileDamage =0;
   int defendingTileDamage =0;
   
@@ -69,7 +69,14 @@ void diceBattle(){
     if(secondA>secondB) defendingTileDamage+=1;
   else attackingTileDamage+=1;
   }
-  
+    
+    println("first A: "+firstA);
+    println("second A: "+secondA);
+    println(attackRolls.size());
+    
+    println("first B: "+firstB);
+    println("second B: "+secondB);
+    println(defenseRolls.size());
   // award card 
   if(troopsOnTile[defendingCountry] - defendingTileDamage>=0){
     cardAwarded = true; 

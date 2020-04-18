@@ -3,7 +3,7 @@
 // wait for all the players to show up then start the game
 
 void checkForEveryoneAndStart(){
-  if(players.size()==1){
+  if(players.size()==3){
     
     players.append("playertwoooo");
     players.append("playerhreet");

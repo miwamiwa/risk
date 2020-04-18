@@ -65,6 +65,7 @@ void dataIn(){
       if(match(sdata[0],"comborequest")!=null){
         delay(1);
         placeableTroops[whoseTurn]+=comboValues[comboMarker];
+        // answer combo amount
         s.write("comboamount "+comboValues[comboMarker]+"\n");
         comboMarker= (comboMarker+1)%comboValues.length;
       }
@@ -163,7 +164,7 @@ void dataIn(){
          
          // IF TERRITORY CONQUERED 
          if(match(sdata[0],"conquest")!=null){
-           
+          
           battlePhase="conquest phase"; 
           // update troops
           troopsOnTile[attackingCountry]--;

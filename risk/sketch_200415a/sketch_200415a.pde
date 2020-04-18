@@ -365,7 +365,7 @@ void dataIn(){
        else if(battlePhase=="conquest phase"){
          
          if(match(sdata[0],"moretroops")!=null){
-           if(troopsOnTile[attackingCountry]>2){
+           if(troopsOnTile[attackingCountry]>1){
             troopsOnTile[attackingCountry]--;
             troopsOnTile[defendingCountry]++;
             s.write("addtonewtile\n");

@@ -1,4 +1,4 @@
-String userName = "user1";
+String userName = "cooldesktop";
 
 String[] territoryNames = {
   "Alaska",
@@ -720,7 +720,7 @@ void runGamePhase(){
          
          infoRect(results);
          pressRforReturn();
-         if(enterPressed()){
+         if(enterPressed()&&canContinue){
           c.write("continuebattle\n"); 
          }
        }

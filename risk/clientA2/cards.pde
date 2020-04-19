@@ -1,6 +1,4 @@
 
-
-
 void displayCards(){
  fill(245);
  rect(10,10,400,35);

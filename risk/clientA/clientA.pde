@@ -1,4 +1,4 @@
-String userName = "sovietlaptop1";
+String userName = "chucky";
 
 
 int playingPlayer =-1;
@@ -94,10 +94,27 @@ void setup() {
   }
   
 } 
-
+//boolean yo=false;
+boolean drawing = false;
 void draw() {         
  
   runGame();
+  
+  if (mousePressed == true) {
+    if(getTile()==-1){
+      drawing = true;
+      // Draw our line
+    // Send mouse coords to other person
+    stroke(255);
+    line(pmouseX, pmouseY, mouseX, mouseY); 
+    c.write("draw "+pmouseX + " " + pmouseY + " " + mouseX + " " + mouseY + "\n");
+    }
+    else drawing = false;
+    
+  }
+  
+  if(mousePressed==false) drawing = false;
+  
   // Receive data from server
   if (c.available() > 0) { 
     input = c.readString(); 

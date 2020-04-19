@@ -1,6 +1,10 @@
 
 void dataIn(){
   
+  if(match(sdata[0],"draw")!=null){
+    s.write("drawit "+data[1]+" "+data[2]+" "+data[3]+" "+data[4]+"\n");
+  }
+  
   if(!gameStarted){
      if(match(sdata[0],"joined")!=null){
    players.append( sdata[1] );

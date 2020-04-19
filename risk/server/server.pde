@@ -65,7 +65,7 @@ void setup() {
   size(450, 255);
   background(204);
   stroke(0);
-  frameRate(5); // Slow it down a little
+  frameRate(10); // Slow it down a little
   s = new Server(this, 12345);  // Start a simple server on a port
 } 
 
@@ -74,6 +74,8 @@ void setup() {
 // main loop 
 
 void draw() { 
+  
+ if(keyPressed&&key=='q') s.write("choicereset\n");
   
  if(!gameStarted) checkForEveryoneAndStart();
  else if(gamePhase =="initial troop assignment"){

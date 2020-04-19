@@ -151,7 +151,7 @@ void runGamePhase(){
       +"\n1st country: "+territoryNames[tacticalMoveFrom]+". 2nd country: "+territoryNames[tacticalMoveTo];
     }
     else {
-      tacticalText = "tactical move! PRESS B to END TURN.";
+      tacticalText = "tactical move! PRESS B to confirm (END TURN).";
       nextline="\nRIGHT CLICK to add to first country, LEFT CLICK to add to second country"
       +"\n1st country: "+territoryNames[tacticalMoveFrom]+". 2nd country: "+territoryNames[tacticalMoveTo];
     }

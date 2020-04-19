@@ -4,6 +4,11 @@ String userName = "sovietlaptop1";
 int playingPlayer =-1;
 String cardText = "";
 
+
+boolean playerReady = false;
+String readyTxt = "READY";
+color buttoncolor = color(120,120,250);
+
 int[] lastAttackRoll = new int[3];
 int[] lastDefenseRoll = new int[3];
 PImage img;
@@ -81,8 +86,12 @@ void setup() {
   delay(1000);
   frameRate(10); // Slow it down a little
   // Connect to the server’s IP address and port­
-  c = new Client(this, "127.0.0.1", 12345); // Replace with your server’s IP and port
+  c = new Client(this, "192.168.0.0", 12345); // Replace with your server’s IP and port
   c.write("joined "+userName+"\n"); // joined
+  
+  for(int i=0; i<8; i++){
+   getCard( floor( random(4) ));
+  }
   
 } 
 
@@ -121,13 +130,11 @@ void updateReinforcementsFromServer(){
   //update number of troops
   troopsOnTile[ data[1] ]=data[2];
    
-   println("received troop update message. Tile: "+data[1]+". new amount: "+data[2]);
   // if that was your tile, update your number of reinforcements left
    if (isUserTile(data[1])){   
    int diff = troopsOnTile[data[1]]-lastnum;
    placeableTroops -= diff;
    
-   println("last amount: "+lastnum+". new placeableTroops "+placeableTroops);
    }
 }
 
@@ -137,13 +144,10 @@ void updateReinforcementsFromServer(){
 void startAttackPhase(){
  turnPhase="attack phase"; 
  availableDice = getAvailableDice("attacking");
- println("attack start");
 }
 
 void startDefensePhase(){
  turnPhase="defense phase"; 
-// availableDice = getAvailableDice("defending");
-println("defense phase!");
 }
 
 
@@ -151,6 +155,7 @@ println("defense phase!");
 
 
 int getAvailableDice(String atkdef){
+  
   int result=0;
   switch(atkdef){
    case "attacking": 
@@ -165,6 +170,7 @@ int getAvailableDice(String atkdef){
   
   return result;
 }
+
 
 
 void runTroopAssignmentPhase(){
@@ -182,9 +188,3 @@ void runTroopAssignmentPhase(){
     pressRforReady(2);
     addRemoveTroopsOnClick(2); 
 }
-
-
-
-boolean playerReady = false;
-String readyTxt = "READY";
-color buttoncolor = color(120,120,250);

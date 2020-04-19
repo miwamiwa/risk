@@ -1,5 +1,9 @@
 void dataIn(){
   
+  if(match(sdata[0],"drawit")!=null){
+    stroke(0);
+    line(data[1], data[2], data[3], data[4]); 
+  }
   
   // reset choiceMade 
   choiceMade = false;

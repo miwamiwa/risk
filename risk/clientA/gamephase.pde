@@ -70,7 +70,7 @@ void runGamePhase(){
       // display instructions
       infoRect( "battle phase.\nCLICK to select a country to attack from." +endtxt );
       // select attacking country
-      if(mousePressed&&mouseButton==LEFT){
+      if(mousePressed&&mouseButton==LEFT&&!drawing){
         int tile = getTile();
         if(tile!=-1){
           // select if tile is owned by user and has more than 1 unit
@@ -96,7 +96,7 @@ void runGamePhase(){
       // press b to go back to selecting attacking country
      pressBforBack();
      // select country to attack
-      if(mousePressed&&mouseButton==LEFT){
+      if(mousePressed&&mouseButton==LEFT&&!drawing){
       int tile = getTile();
       if(tile!=-1){
         boolean usertile = isUserTile(tile);
@@ -183,7 +183,7 @@ void runGamePhase(){
      // once tactical targets are confirmed,
      // - left/right click to add/remove troops
      if(tacticalTargetConfirmed){
-       if(mousePressed&&!choiceMade){
+       if(mousePressed&&!choiceMade&&!drawing){
          choiceMade = true;
         if(mouseButton==LEFT){
           delay(20);
@@ -199,7 +199,7 @@ void runGamePhase(){
      // select targets on mouse press
      else {
        
-    if(mousePressed){
+    if(mousePressed&&!drawing){
       int targetTile=-1;
       targetTile = getTile();
       if(targetTile!=-1){
@@ -295,7 +295,7 @@ void runGamePhase(){
           
           // controls
           // click to add/remove troops on belligerent tiles
-          if(mousePressed&&!choiceMade){
+          if(mousePressed&&!choiceMade&&!drawing){
            if(mouseButton==LEFT){
             choiceMade = true;
             c.write("moretroops\n");

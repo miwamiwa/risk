@@ -84,9 +84,9 @@ void setup() {
   map = loadImage("Risk_game_map.png");
   image(map, 0, 0, width,height-120);
   delay(1000);
-  frameRate(10); // Slow it down a little
+  frameRate(5); // Slow it down a little
   // Connect to the server’s IP address and port­
-  c = new Client(this, "127.0.0.1", 12345); // Replace with your server’s IP and port
+  c = new Client(this, "192.168.0.175", 12345); // Replace with your server’s IP and port
   c.write("joined "+userName+"\n"); // joined
   
   for(int i=0; i<8; i++){
@@ -118,6 +118,11 @@ void draw() {
   // Receive data from server
   if (c.available() > 0) { 
     input = c.readString(); 
+    int index = input.indexOf("\n");
+    if(index==-1){
+     input+="\n";
+     println("MESSAGE INPUT MISSING END TAG!!! MESSAGE: "+input);
+    }
     input = input.substring(0,input.indexOf("\n"));  // Only up to the newline
     data = int(split(input, ' '));  // Split values into an array
     sdata = splitTokens(input," ");

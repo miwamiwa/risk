@@ -140,6 +140,7 @@ void dataIn(){
          troopsOnTile[attackingCountry]--;
          troopsOnTile[attackTarget]=1;
          // update tile color
+         loadPixels();
          setTileColor( teamColors[attacker], attackTarget );
          updatePixels();
          // update player territories arrays

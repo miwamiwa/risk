@@ -101,8 +101,8 @@ int getBaseReinforcements(int player){
  int reinforcements =0;
  int territories=0;
   territories = playerTiles[player].size();
-
  reinforcements = floor(territories/3);
+ if(reinforcements<3) reinforcements=3;
  return reinforcements;
 }
 

@@ -19,24 +19,35 @@ void dataIn(){
       if(data[0]==2){ 
         // REMOVE UNITS
         if(data[1]==0){
+          println("wtf");
+          println(data);
          if(troopsOnTile[data[2]]>1){
+           println("remove troops request. tile: "+data[2]+". current troops on tile: "+troopsOnTile[data[2]]
+           +". current pTroops: "+placeableTroops[data[3]]+". player: "+data[3]);
            troopsOnTile[data[2]]--;
            placeableTroops[data[3]]++;
+           
+           println("remove troops answer sent. tile: "+data[2]+". new troops on tile: "+troopsOnTile[data[2]]
+           +". new pTroops: "+placeableTroops[data[3]]);
            s.write("troops "+data[2]+" "+troopsOnTile[data[2]]+"\n");
          }
        }
+       
        // ADD UNITS
        else if(data[1]==1){
+         // if player can still add troops, update tiles 
          if(placeableTroops[data[3]]>0){
            troopsOnTile[data[2]]++;
            placeableTroops[data[3]]--;
-           s.write("troops "+data[2]+" "+troopsOnTile[data[2]]+"\n");
          }
+         // send answer
+         s.write("troops "+data[2]+" "+troopsOnTile[data[2]]+"\n");
        }
+       
        // SIGNAL PLAYER READY
        else if(data[1]==2){
          switch(data[2]){
-           case 0: player1InitDone = true; println("done"); break;
+           case 0: player1InitDone = true; break;
            case 1: player2InitDone = true; break;
            case 2: player3InitDone = true; break;
          }
@@ -78,16 +89,16 @@ void dataIn(){
          if(troopsOnTile[data[2]]>troopsOnTurnStart[data[2]]){
            troopsOnTile[data[2]]--;
            placeableTroops[data[3]]++;
-           s.write("troops "+data[2]+" "+troopsOnTile[data[2]]+"\n");
          }
+         s.write("troops "+data[2]+" "+troopsOnTile[data[2]]+"\n");
        }
        // ADD UNITS
        else if(data[1]==1){
          if(placeableTroops[data[3]]>0){
            troopsOnTile[data[2]]++;
            placeableTroops[data[3]]--;
-           s.write("troops "+data[2]+" "+troopsOnTile[data[2]]+"\n");
          }
+         s.write("troops "+data[2]+" "+troopsOnTile[data[2]]+"\n");
        }
        // R FOR READY
        if(data[1]==2){
@@ -169,6 +180,8 @@ void dataIn(){
           // update troops
           troopsOnTile[attackingCountry]--;
           troopsOnTile[defendingCountry]=1;
+          println("atk country: "+troopsOnTile[attackingCountry]);
+          println("def country: "+troopsOnTile[defendingCountry]);
          // update player tile list
           int index =-1;
          for(int i=0; i<playerTiles[defender].size(); i++){
@@ -185,19 +198,29 @@ void dataIn(){
          // ADD TROOPS (upon conquest)
          if(match(sdata[0],"moretroops")!=null){
            if(troopsOnTile[attackingCountry]>1){
+             println("atk country: "+troopsOnTile[attackingCountry]);
+          println("def country: "+troopsOnTile[defendingCountry]);
             troopsOnTile[attackingCountry]--;
             troopsOnTile[defendingCountry]++;
+            println("new atk country: "+troopsOnTile[attackingCountry]);
+          println("new def country: "+troopsOnTile[defendingCountry]);
             s.write("addtonewtile\n");
            }
+           else s.write("choicereset\n");
          }
          
          // REMOVE TROOPS (upon conquest)
          else if(match(sdata[0],"lesstroops")!=null){
            if(troopsOnTile[defendingCountry]>1){
+             println("atk country: "+troopsOnTile[attackingCountry]);
+          println("def country: "+troopsOnTile[defendingCountry]);
              troopsOnTile[attackingCountry]++;
             troopsOnTile[defendingCountry]--;
+            println("new atk country: "+troopsOnTile[attackingCountry]);
+          println("new def country: "+troopsOnTile[defendingCountry]);
              s.write("removefromnewtile\n");
            }
+            else s.write("choicereset\n");
          }
        }
        
@@ -221,6 +244,7 @@ void dataIn(){
          troopsOnTile[data[2]]++;
          s.write("tacticalchange "+data[1]+" "+troopsOnTile[data[1]]+" "+data[2]+" "+troopsOnTile[data[2]]+"\n");
         }  
+        else s.write("choicereset\n");
        }
        
        // TACTICAL PHASE: REMOVE UNITS 
@@ -229,7 +253,8 @@ void dataIn(){
          troopsOnTile[data[1]]++;
          troopsOnTile[data[2]]--;
          s.write("tacticalchange "+data[1]+" "+troopsOnTile[data[1]]+" "+data[2]+" "+troopsOnTile[data[2]]+"\n");
-         }  
+         }
+         else s.write("choicereset\n");
        }
        
        

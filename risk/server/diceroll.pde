@@ -85,4 +85,6 @@ void diceBattle(){
     // send server message
   resultmessage += attackingTileDamage+" "+defendingTileDamage+"\n";
     s.write(resultmessage);
+    troopsOnTile[defendingCountry] -= defendingTileDamage;
+    troopsOnTile[attackingCountry] -= attackingTileDamage;
 }

@@ -54,9 +54,7 @@ StringList getAvailableCombos(){
 boolean hasCombo(int i1, int i2, int i3, IntList input){
   
   boolean result=false;
-  
-  boolean missingOne = !input.hasValue(i1)||!input.hasValue(i2)||!input.hasValue(i3);
-  if(missingOne) return false;
+  if(!input.hasValue(i1)||!input.hasValue(i2)||!input.hasValue(i3)) return false;
   
   int index1 =-1;
   for(int i=0; i<input.size(); i++){

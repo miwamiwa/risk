@@ -88,7 +88,15 @@ void draw() {
   c = s.available();
   if (c != null) {
     input = c.readString(); 
-    input = input.substring(0, input.indexOf("\n"));  // Only up to the newline
+    int index = input.indexOf("\n");
+    if(index==-1){
+     input+="\n";
+     println("MESSAGE INPUT MISSING END TAG!!! MESSAGE: "+input);
+     fill(200,0,200);
+     textSize(100);
+     text("ERROR ON MESSAGE "+input.indexOf("\n"),0,0);
+    }
+    input = input.substring(0, index);  // Only up to the newline
     data = int(split(input, ' ')); // number array
     sdata = splitTokens(input); // text array
     dataIn();// do stuff with data input

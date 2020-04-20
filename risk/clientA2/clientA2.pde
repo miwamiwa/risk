@@ -126,7 +126,7 @@ void draw() {
      textSize(100);
      text("ERROR ON MESSAGE "+input,400,400);
     }
-    input = input.substring(0,input.indexOf("\n"));  // Only up to the newline
+    input = input.substring(0,index);  // Only up to the newline
     data = int(split(input, ' '));  // Split values into an array
     sdata = splitTokens(input," ");
     println(input);

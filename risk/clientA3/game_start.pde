@@ -18,9 +18,9 @@ void initGame(){
     playerTiles[0].append( tile1 );
     playerTiles[1].append( tile2 );
     playerTiles[2].append( tile3 );
-   setTileColor( teamColors[0], tile1);
-   setTileColor( teamColors[1], tile2);
-   setTileColor( teamColors[2], tile3);
+   setTileColor( 0, tile1);
+   setTileColor( 1, tile2);
+   setTileColor( 2, tile3);
    //delay(1);
   // println(i);
   }

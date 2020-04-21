@@ -1,9 +1,9 @@
-String userName = "chucky";
+String userName = "chucky3";
 
 
 int playingPlayer =-1;
 String cardText = "";
-
+int texturePixelSize=4;
 
 boolean playerReady = false;
 String readyTxt = "READY";
@@ -82,6 +82,7 @@ void setup() {
   size(1227,748);
   img = loadImage("Risk_game_map.png");
   map = loadImage("Risk_game_map.png");
+  loadFlagGrid();
   image(map, 0, 0, width,height-120);
   delay(1000);
   frameRate(5); // Slow it down a little
@@ -98,10 +99,13 @@ void setup() {
 boolean drawing = false;
 void draw() {         
  
+  if(joined)
+   makeFlag();
+   
   runGame();
   
   if (mousePressed == true) {
-    if(getTile()==-1){
+    if(getTile()==-1&&flagSelection==-1&&!drawFlag){
       drawing = true;
       // Draw our line
     // Send mouse coords to other person
@@ -126,7 +130,7 @@ void draw() {
      textSize(100);
      text("ERROR ON MESSAGE "+input,400,400);
     }
-    input = input.substring(0,index);  // Only up to the newline
+    input = input.substring(0,input.indexOf("\n"));  // Only up to the newline
     data = int(split(input, ' '));  // Split values into an array
     sdata = splitTokens(input," ");
     println(input);
@@ -212,4 +216,10 @@ void runTroopAssignmentPhase(){
    
     pressRforReady(2);
     addRemoveTroopsOnClick(2); 
+}
+
+
+void mouseReleased(){
+ 
+  drawFlag = false;
 }

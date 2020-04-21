@@ -129,8 +129,8 @@ void runGamePhase(){
       // press enter to start fight
       if(enterPressed()){
         // ready to attack
-        setTileColor(teamColors[clientId],attackingCountry);
-        setTileColor(teamColors[getTileOwner(attackTarget)],attackTarget);
+        setTileColor(clientId,attackingCountry);
+        setTileColor(getTileOwner(attackTarget),attackTarget);
         println("ready to attack!!");
         c.write("4 "+attackingCountry+" "+attackTarget+"\n");
       }

@@ -5,6 +5,13 @@ void dataIn(){
     line(data[1], data[2], data[3], data[4]); 
   }
   
+  else if(match(sdata[0],"flagupdate")!=null){
+   // int player = int( sdata
+   flags[data[1]]=sdata[2];
+  // println("flagupdate : "+sdata[2]);
+   drawFlagString( sdata[2],data[1] );
+  }
+  
   // reset choiceMade 
   choiceMade = false;
   
@@ -141,7 +148,7 @@ void dataIn(){
          troopsOnTile[attackTarget]=1;
          // update tile color
          loadPixels();
-         setTileColor( teamColors[attacker], attackTarget );
+         setTileColor( attacker, attackTarget );
          updatePixels();
          // update player territories arrays
          int index =-1;

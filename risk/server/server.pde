@@ -54,6 +54,9 @@ IntList[] playerCards = {
 IntList turnOrder = new IntList();
 int turn =0;
 
+
+String[] flags = new String[3];
+
 // setup()
 //
 // called on app start 

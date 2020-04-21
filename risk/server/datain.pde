@@ -5,6 +5,11 @@ void dataIn(){
     s.write("drawit "+data[1]+" "+data[2]+" "+data[3]+" "+data[4]+"\n");
   }
   
+  else if(match(sdata[0],"newflag")!=null){
+   flags[data[1]] = sdata[2];
+   s.write("flagupdate "+data[1]+" "+sdata[2]+"\n");
+  }
+  
   if(!gameStarted){
      if(match(sdata[0],"joined")!=null){
    players.append( sdata[1] );

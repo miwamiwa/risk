@@ -9,14 +9,18 @@ void drawTroops(){
   }
 }
 
-void setTileColor( color col, int index ){
+void setTileColor( int p, int index ){
    index = index*3;
   for(int i=0; i<628; i++){
     for(int j=0; j<1227; j++){
       color px = img.get(j,i);
    if( red( px )== hues[index] && green( px )==hues[index+1] && blue( px  )==hues[index+2]){
      
-   pixels[i*width+j] = col; 
+     int gridX = floor(j/texturePixelSize)%flagW;
+     int gridY = floor(i/texturePixelSize)%flagH;
+     color pick = flagGrids[ p*flagW*flagH + gridY*flagW + gridX  ];
+    
+   pixels[i*width+j] = flagColors[ pick ]; 
    }
     }
   }

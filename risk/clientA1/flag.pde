@@ -101,7 +101,7 @@ void newFlagPixel(int index){
   int i=floor(index/flagW);
   int j=index%flagW;
   
-  fill(flagColors[clientId*3+colorSelection]);
+  fill(clientId*3+flagColors[colorSelection]);
   rect( 
      flagX + j*flagGridSize,
      flagY + i*flagGridSize,
@@ -157,7 +157,7 @@ void sendMap(){
     if( flagGrids[i] != currentval ){
       
       currentval = flagGrids[i];
-      colors.append(currentval - 3*clientId);
+      colors.append(currentval);
       counts.append(0);
       listLength++;
     }

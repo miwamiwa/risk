@@ -87,7 +87,7 @@ void setup() {
   delay(1000);
   frameRate(5); // Slow it down a little
   // Connect to the server’s IP address and port­
-  c = new Client(this, "192.168.0.175", 12345); // Replace with your server’s IP and port
+  c = new Client(this, "127.0.0.1", 12345); // Replace with your server’s IP and port
   c.write("joined "+userName+"\n"); // joined
   
   for(int i=0; i<8; i++){

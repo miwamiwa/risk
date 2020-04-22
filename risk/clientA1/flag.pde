@@ -96,12 +96,17 @@ void makeFlag(){
  
 }
 
+
+
+
+
 void newFlagPixel(int index){
-  flagGrids[clientId*flagW*flagH+index] = colorSelection;
+  int selection = colorSelection + clientId*3;
+  flagGrids[clientId*flagW*flagH+index] = selection;
   int i=floor(index/flagW);
   int j=index%flagW;
   
-  fill(clientId*3+flagColors[colorSelection]);
+  fill(flagColors[selection]);
   rect( 
      flagX + j*flagGridSize,
      flagY + i*flagGridSize,
@@ -109,6 +114,12 @@ void newFlagPixel(int index){
      flagGridSize
      );
 }
+
+
+
+
+
+
 
 int clickFlag(){
   int result=-1;
@@ -154,9 +165,10 @@ void sendMap(){
   int listLength =0;
   for(int i=startval; i<startval+totalFlagPixels; i++){
     
-    if( flagGrids[i] != currentval ){
+    int pixval = flagGrids[i] - clientId*3;
+    if( pixval != currentval ){
       
-      currentval = flagGrids[i];
+      currentval = pixval;
       colors.append(currentval);
       counts.append(0);
       listLength++;
@@ -192,7 +204,13 @@ println(resultArray);
   c.write("newflag "+clientId+" "+resultString+"\n");
 }
 
+
+
 int[] unpackedList = new int[totalFlagPixels];
+
+
+
+
 
 void drawFlagString( String input, int player ){
   
@@ -215,6 +233,7 @@ void drawFlagString( String input, int player ){
     }
    // else {}
      println("val "+val+" res: "+res);
+     res = res+player*3;
     unpackedList[counter] = res;
     counter++;
     
@@ -251,7 +270,7 @@ void drawFlagString( String input, int player ){
   if(clientId!=-1){
    for(int i=0; i<playerTiles[player].size(); i++){
  //    println("setit");
-     setTileColor(clientId,playerTiles[player].get(i));
+     setTileColor(player,playerTiles[player].get(i));
    }
   }
   

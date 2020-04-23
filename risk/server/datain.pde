@@ -15,8 +15,8 @@ void dataIn(){
    players.append( sdata[1] );
    int index = players.size()-1;
    s.write( "1 "+index+"\n");
-   delay(10);
-   println("newplayer "+index+"\n");
+   //delay(10);
+  // println("newplayer "+index+"\n");
    }
   }
   

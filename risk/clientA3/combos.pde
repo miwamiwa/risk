@@ -1,9 +1,9 @@
-void pressKeyToSelectCombo(StringList inputlist){
-  if(!comboPlaced&&keyPressed&&!choiceMade&&(key=='0'||key=='1'||key=='2'||key=='3'||key=='4'||key=='5'||key=='6'||key=='7'||key=='8'||key=='9')){
-        int thekey =key-48;
+void selectCombo(StringList inputlist, int pick){
+  if(!choiceMade){
+          //  int thekey =key-48;
     String message = "comborequest\n";
     comboPlaced = true;
-    int[] cardlist = int(splitTokens( inputlist.get(thekey),"," ));
+    int[] cardlist = int(splitTokens( inputlist.get(pick),"," ));
     choiceMade = true;
      int[] index = new int[3];
     for(int i=0; i<3; i++){
@@ -28,6 +28,7 @@ void pressKeyToSelectCombo(StringList inputlist){
   }
   displayCards();
     c.write(message);
+    turnPhase = "reinforcement phase";
   }
 }
 

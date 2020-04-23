@@ -1,20 +1,28 @@
 
 void dataIn(){
   
-  if(match(sdata[0],"draw")!=null){
-    s.write("drawit "+data[1]+" "+data[2]+" "+data[3]+" "+data[4]+"\n");
+  if(match(sdata[0],"chat")!=null){
+   s.write(input+"\n"); 
+  }
+  else if(match(sdata[0],"draw")!=null){
+    s.write(input+"\n");
+  }
+  else if(match(sdata[0],"newcolor")!=null){
+    s.write(input+"\n");
   }
   
   else if(match(sdata[0],"newflag")!=null){
    flags[data[1]] = sdata[2];
-   s.write("flagupdate "+data[1]+" "+sdata[2]+"\n");
+   println("relayed flag");
+   delay(5);
+   s.write(input+"\n");
   }
   
   if(!gameStarted){
      if(match(sdata[0],"joined")!=null){
    players.append( sdata[1] );
    int index = players.size()-1;
-   s.write( "1 "+index+"\n");
+   s.write( "1 "+turnOrder.get(index)+"\n");
    //delay(10);
   // println("newplayer "+index+"\n");
    }

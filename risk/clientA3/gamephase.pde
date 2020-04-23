@@ -1,9 +1,10 @@
-int buttonx1=415;
-int buttonx2=495;
-int buttonx3=575;
-int buttonx4=655;
-int buttonx5=735;
-int buttonx6=815;
+int buttonx1=410;
+int buttonx2=490;
+int buttonx3=570;
+int buttonx4=650;
+int buttonx5=730;
+int buttonx6=810;
+int buttony=657;
 // button script:
 // if( button(415,640,"test",20,color(#FFFFFF),color(#000000), true) ){println("button click");}
 
@@ -18,58 +19,75 @@ void runGamePhase(){
     
     // ********************* COMBO PLACEMENT PHASE **********
     case "combo placement":  
-    
+      
+      infoRect("Select a combo from the list.");
       // display combo list
       StringList combos = getAvailableCombos();
       String combostring = "";
       for(int i=0; i<combos.size(); i++){
-       combostring+=i+": "+combos.get(i)+". "; 
+       
+        int x = (i%4)*185;
+        int y= floor(i/4) * 30;
+       if( button(410 + x,height-145 + y,combos.get(i),14,color(#FFFFFF),color(#000000), false ) ){
+        selectCombo(combos,i); 
+       }
       }
-      infoRect("Select a combo from the list (press 0,1,2..)");
-      textSize(15);
-      textLeading(15);
-      text("\n"+combostring,410,height-95,600,120);
+      
+      
+     // textSize(15);
+     // textLeading(15);
+     // text("\n"+combostring,410,height-105,600,120);
       
       // Combo placement phase controls: 
       // - Press r to return to reinforcement phase
-      if( button(buttonx1,640,"Go Back",20,color(#FFFFFF),color(#000000), false ) ){
+      if( button(720,height-175,"Go Back",18,color(#FFFFFF),color(#000000), false ) ){
         turnPhase = "reinforcement phase";
       }
       // - Press number keys to select a combo
-      pressKeyToSelectCombo(combos);     
+          
      break; 
     
     // *************** ******** REINFORCEMENT PHASE **************
     case "reinforcement phase":
       
       // display instructions:
-      String combotxt = "\nYou can play a combo now if you have one available.";
-      if(comboPlaced) combotxt="\nYou can't place any more combos this turn (maximum one)";
-      infoRect(
-        "your turn. /nPLACE TROOPS! "+placeableTroops+ " dudes left."
+      String combotxt = "\n                                        You can play a combo now if you have one available.";
+      if(comboPlaced) combotxt="\nYou can't place any more combos this turn (max 1)";
+      if(placeableTroops>0){
+        infoRect(
+        "Your turn. \n"+placeableTroops+ " dudes left."
         +"\nLEFT-CLICK on a country to add, RIGHT-CLICK to remove."
-        +"\nSelect Start Turn when ready."
+        +"\nStart Turn when ready."
         + combotxt
       ); 
+        flashyText("PLACE DUDES!", 510,height-155,20,#333333,#ffcc00,true);
+      }
+      else {
+        infoRect(
+        "Your turn. \nPress start when ready\n\n"
+        + combotxt
+      ); 
+      }
+      
+      
       
       // Reinforcement phase controls:
       
       // - press button to start combo placement phase
-      if( button(buttonx1,640,"Combos",20,color(#FFFFFF),color(#000000), false) ) turnPhase="combo placement";
+      if( button(buttonx2+50,buttony,"Combos",20,color(#FFFFFF),color(#000000), false) ) turnPhase="combo placement";
       //if(enterPressed()&&!comboPlaced) 
       // - press button to start CHOICE PHASE
-      if( button(buttonx2,640,"Start Turn",20,color(#FFFFFF),color(#000000), false) ) turnPhase="choice phase";
+      if( button(buttonx1,buttony,"Start Turn",20,color(#FFFFFF),color(#000000), false) ) turnPhase="choice phase";
       // - click to add/remove units
       addRemoveTroopsOnClick(3); 
-      
-      
+
     break;
     
     // ************************** CHOICE PHASE *********************
     case "choice phase": 
     
     // press button at any time during choice phase to end turn.
-    if( button(buttonx6,640,"End Turn",20,color(#FFFFFF),color(#000000), false) ) c.write("turnisover\n"); 
+    if( button(buttonx6,buttony,"End Turn",20,color(#FFFFFF),color(#000000), false) ) c.write("turnisover\n"); 
     
     // setup end text
     String endtxt = "\nPRESS E to end turn (+ tactical move) (can't undo).";
@@ -109,7 +127,7 @@ void runGamePhase(){
       
       // Controls:
       // press button to go back to selecting attacking country
-     if( button(buttonx2,640,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ) cancelCountrySelection();
+     if( button(buttonx2,buttony,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ) cancelCountrySelection();
      
      // select country to attack
       if(hasClicked&&mouseButton==LEFT&&!drawing&&!buttonclicked){
@@ -135,15 +153,15 @@ void runGamePhase(){
       int defdice = getAvailableDice("defending");
       infoRect(
         "Attacking country: "+territoryNames[attackTarget]+". "+atkdice+" dice available. "
-        +"Defending country: "+territoryNames[attackingCountry]+". "+defdice+" dice available. "
-        +"\nStart fight?"
+        +"\nDefending country: "+territoryNames[attackingCountry]+". "+defdice+" dice available. "
+        +"\n\nStart fight?"
       );
       
       // controls:
       // press button to go back to selecting country to attack
-      if( button(buttonx2,640,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ) cancelCountrySelection();
+      if( button(buttonx2,buttony,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ) cancelCountrySelection();
       // press enter to start fight
-      if( button(buttonx1,640,"Start",20,color(#FFFFFF),color(#000000), true) ){
+      if( button(buttonx1,buttony,"Start",20,color(#FFFFFF),color(#000000), true) ){
         // ready to attack
         //setTileColor(clientId,attackingCountry);
         //setTileColor(getTileOwner(attackTarget),attackTarget);
@@ -179,7 +197,7 @@ void runGamePhase(){
       
       // if tactical move targets selected:
       // - press Enter to confirm targets (proceed to tactical move)
-      if( button(buttonx1,640,"Confirm Selection",20,color(#FFFFFF),color(#000000), false) ){
+      if( button(buttonx1,buttony,"Confirm Selection",20,color(#FFFFFF),color(#000000), false) ){
         if(tacticalMoveFrom!=-1&&tacticalMoveTo!=-1&&!tacticalTargetConfirmed){
        tacticalTargetConfirmed=true;
        delay(100);
@@ -187,13 +205,13 @@ void runGamePhase(){
       }
      
      // - press B to end tactical phase (trigger next turn)
-     if( button(buttonx6,640,"End Turn",20,color(#FFFFFF),color(#000000), false) &&!choiceMade){
+     if( button(buttonx6,buttony,"End Turn",20,color(#FFFFFF),color(#000000), false) &&!choiceMade){
        choiceMade = true;
        c.write("tacticalphaseover\n");
      }
      
      // - press r to go back a step
-     if( button(buttonx2,640,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ){
+     if( button(buttonx2,buttony,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ){
        if(tacticalTargetConfirmed) tacticalTargetConfirmed=false;
        else if(tacticalMoveTo!=-1) tacticalMoveTo=-1;
        else if(tacticalMoveFrom!=-1) tacticalMoveFrom=-1;
@@ -262,9 +280,11 @@ void runGamePhase(){
          
          // display instructions
          infoRect(
-         "pick a number of dice to roll (press 1,2,3)"
-         + "\nmax available dice: "+availableDice
+         "Attacking "+territoryNames[attackTarget]+" ("+playerNames[defender]+") from "+territoryNames[attackingCountry]+". "
+         + "\nYou have "+availableDice+" dice available. Defender has "+defDice+"."
          );
+         
+         flashyText("Select how may dice to use.",410,height-100,20,#000000,#ff4444,true);
          
          // Attacker's dice choice controls (press 1, 2 or 3)
          displayDiceChoiceButtons();
@@ -276,7 +296,10 @@ void runGamePhase(){
        else if(battlePhase=="defenderchoice"){
           
          // display instructions 
-         infoRect("defender is picking his dice");
+         infoRect(
+         "Attacking "+territoryNames[attackTarget]+" ("+playerNames[defender]+") from "+territoryNames[attackingCountry]+". "
+         +"\nDefender is chosing his dice."
+         );
        }
        
        // (ATK BATTLE PHASE) RESULT PHASE
@@ -290,11 +313,11 @@ void runGamePhase(){
          
          // (atk battle phase) result phase controls:
          // press r to return to choice phase 
-         if( button(buttonx1,640,"Exit battle",20,color(#FFFFFF),color(#000000), false) )
+         if( button(buttonx1,buttony,"Exit battle",20,color(#FFFFFF),color(#000000), false) )
          returnToChoicePhase();
          // press enter to continue battle
          if(canContinue){
-           if( button(buttonx2,640,"Continue",20,color(#FFFFFF),color(#000000), false) )
+           if( button(buttonx2,buttony,"Continue",20,color(#FFFFFF),color(#000000), false) )
           c.write("continuebattle\n"); 
          }
        }
@@ -313,7 +336,7 @@ void runGamePhase(){
           );
           
           // press r to return to choice phase
-          if( button(buttonx1,640,"Confirm placement",20,color(#FFFFFF),color(#000000), false) ) returnToChoicePhase();
+          if( button(buttonx1,buttony,"Confirm placement",20,color(#FFFFFF),color(#000000), false) ) returnToChoicePhase();
           
           // controls
           // click to add/remove troops on belligerent tiles

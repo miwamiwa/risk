@@ -1,6 +1,9 @@
 String userName = "chucky3";
 
-
+int[] doodleBuffer = new int[20];
+int doodleCount=0;
+int dmouseX=-1;
+int dmouseY=-1;
 int playingPlayer =-1;
 String cardText = "";
 int texturePixelSize=4;
@@ -14,6 +17,7 @@ int[] lastAttackRoll = new int[3];
 int[] lastDefenseRoll = new int[3];
 PImage img;
 PImage map;
+PImage wheel;
 // 2B: Shared drawing canvas (Client)
 int tacticalMoveFrom =-1;
 int tacticalMoveTo =-1;
@@ -31,7 +35,7 @@ boolean joined = false;
 int clientId;
 int[] tileassignment = new int[42];
 boolean tileInfoPending = false;
-
+int defDice=0;
 int imgSize=1227*628;
 int numberOfPlayers = 3;
 int totalTiles=42;
@@ -80,12 +84,18 @@ boolean drawing = false;
 int comboMarker = 0;
 boolean lastMousePressed = false;
 int choiceReset=0;
+String[] logData = new String[50];
 
 void setup() { 
   
+  for(int i=0; i<50; i++){
+  logData[i]=""; 
+ }
+ 
   size(1227,748);
   img = loadImage("map_thick.png");
   map = loadImage("map_withconnect.png");
+  wheel=loadImage("wheel.png");
   loadFlagGrid();
   image(map, 0, 0, width,height-120);
   delay(1000);
@@ -93,36 +103,52 @@ void setup() {
   // Connect to the server’s IP address and port­
   c = new Client(this, "127.0.0.1", 12345); // Replace with your server’s IP and port
   c.write("joined "+userName+"\n"); // joined
-  
-  for(int i=0; i<8; i++){
-   getCard( floor( random(4) ));
-  }
-  
-  
-  released = true;
+    /*
+ // released = true;
+ for(int i=0; i<4; i++){
+  getCard(i); 
+ }
+ gamePhase="game";//ÈgameÈ
+ isTurnToPlay = true;
+ turnPhase="attack phase";
+ attackingCountry=1;
+ attackTarget=2;
+ battlePhase="defenderchoice";
+ placeableTroops = 0;
+ playerNames[0]="p1";
+ playerNames[1]="p2";
+ playerNames[2]="p3";
+ availableDice =3;
+ defDice=2;
+ joined=true;
+ */
 } 
 //boolean yo=false;
 boolean hasClicked=false;
+
+
 void draw() {  
+  buttonclicked = false;
   
-  
+  colorWheel();
+  logInput();
   resetChoice();
   
   hasClicked = clicked();
 //  if(mousePressed) println("mouseX,Y: "+mouseX+","+mouseY);
 //  else released = true;
   
-   buttonclicked = false;
+   
   
   
    
   runGame();
-  //doodle();
+  doodles();
   getDataIn(); 
 
 if(joined) makeFlag();
 
-
+  
 }
 
 
@@ -207,18 +233,18 @@ void runTroopAssignmentPhase(){
 }
 
 void mousePressed(){
-  
+  println(mouseX,mouseY);
 }
 
 void mouseReleased(){
- 
+   dmouseX=-1;
   drawFlag = false;
  // released = true;
 }
 
 boolean clicked(){
   boolean result = false;
-  if(!mousePressed&&lastMousePressed) result = true;
+  if(!mousePressed&&lastMousePressed&&!drawWheel) result = true;
   lastMousePressed=mousePressed;
   return result;
 }

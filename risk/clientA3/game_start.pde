@@ -1,12 +1,16 @@
+int[] turnOrder = new int[3];
+
 void initGame(){
-    
   
+   turnOrder[0] = data[4];
+   turnOrder[1] = data[5];
+   turnOrder[2] = data[6];
    for(int i=0; i<42; i++){
    troopsOnTile[i] = 1; 
   }
   
    for(int i=0; i<42; i++){
-    tileassignment[i] = data[i+4]; 
+    tileassignment[i] = data[i+7]; 
    }
    
     loadPixels();

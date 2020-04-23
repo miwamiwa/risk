@@ -70,6 +70,11 @@ void setup() {
   stroke(0);
   frameRate(5); // Slow it down a little
   s = new Server(this, 12345);  // Start a simple server on a port
+  
+  turnOrder.append(0);
+  turnOrder.append(1);
+  turnOrder.append(2);
+  turnOrder.shuffle();
 } 
 
 // draw()
@@ -91,6 +96,7 @@ void draw() {
   c = s.available();
   if (c != null) {
     input = c.readString(); 
+    println(input);
     int index = input.indexOf("\n");
     if(index==-1){
      input+="\n";

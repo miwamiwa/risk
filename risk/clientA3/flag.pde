@@ -1,5 +1,5 @@
 int flagX=800;
-int flagY=370;
+int flagY=340;
 int flagW=15;
 int flagH=12;
 int totalFlagPixels = flagW*flagH;
@@ -34,11 +34,11 @@ int brushSize=1;
 
 void loadFlagGrid(){
   
-  fill(60);
-  text(
-  "flag: press z,x,c to pick color.\nclick to paint\nbrushsize: a,s\nupdate map: q",
-  flagX+5,flagY+flagH*flagGridSize+10);
-  int assignedColor = 0;
+ // fill(60);
+ // text(
+//  "flag: press z,x,c to pick color.\nclick to paint\nbrushsize: a,s\nupdate map: q",
+ // flagX+5,flagY+flagH*flagGridSize+10);
+  //int assignedColor = 0;
   for(int k=0; k<3; k++){
     for(int i=0; i<flagH; i++){
    for(int j=0; j<flagW; j++){
@@ -56,16 +56,29 @@ void makeFlag(){
   
   flagSelection =clickFlag();
   
-  if(keyPressed)
-  {
-   switch(key){
-    case 'z': colorSelection = 0; break;
-    case 'x': colorSelection = 1; break;
-    case 'c': colorSelection = 2; break;
-    case 'a': brushSize=0; break;
-    case 's': brushSize=1; break;
-    case 'q': sendMap(); break;
-   }
+  
+  if( button(916,342+flagH*10+10,"SEND",20,color(#333333),color(#FFFFFF), false) ){
+    sendMap();
+  }
+  
+  if( button(880,375+flagH*10+10,"1",20,flagColors[clientId*3],color(#FFFFFF), false) ){
+    colorSelection =0;
+    wheelColor = flagColors[ clientId*3+0 ];
+  }
+  if( button(910,375+flagH*10+10,"2",20,flagColors[clientId*3+1],color(#FFFFFF), false) ){
+    colorSelection=1;
+    wheelColor = flagColors[ clientId*3+1 ];
+  }
+  if( button(940,375+flagH*10+10,"3",20,flagColors[clientId*3+2],color(#FFFFFF), false) ){
+    colorSelection=2;
+    wheelColor = flagColors[ clientId*3+2 ];
+  }
+  
+  if( button(880,405+flagH*10+10,"b",20,color(#333333),color(#FFFFFF), false) ){
+    brushSize=0;
+  }
+  if( button(910,405+flagH*10+10,"B",20,color(#333333),color(#FFFFFF), false) ){
+    brushSize=1;
   }
   
   if(!flagLoaded&&clientId!=-1){
@@ -123,7 +136,7 @@ void newFlagPixel(int index){
 
 int clickFlag(){
   int result=-1;
-  if(mousePressed&&!buttonclicked&&released){
+  if(mousePressed&&!buttonclicked){
     if(
   mouseX>flagX&&mouseX<flagX+flagW*flagGridSize
   && mouseY>flagY &&mouseY<flagY+flagH*flagGridSize
@@ -133,7 +146,6 @@ int clickFlag(){
    result = gridY*flagW + gridX;
   // flagLoaded=false;
    drawFlag = true;
-   released = false;
    newFlagPixel(result);
    
    if(brushSize>0){
@@ -202,7 +214,11 @@ void sendMap(){
 //  drawFlagString( flagString );
 println("sending : "+resultString);
 println(resultArray);
-  c.write("newflag "+clientId+" "+resultString+"\n");
+  c.write("newflag "+clientId
+  +" "+int(red(flagColors[clientId*3]))+" "+int(green(flagColors[clientId*3]))+" "+int(blue(flagColors[clientId*3]))
+  +" "+int(red(flagColors[clientId*3+1]))+" "+int(green(flagColors[clientId*3+1]))+" "+int(blue(flagColors[clientId*3+1]))
+  +" "+int(red(flagColors[clientId*3+2]))+" "+int(green(flagColors[clientId*3+2]))+" "+int(blue(flagColors[clientId*3+2]))
+  +" "+resultString+"\n");
 }
 
 
@@ -215,7 +231,7 @@ int[] unpackedList = new int[totalFlagPixels];
 
 void drawFlagString( String input, int player ){
   
-  
+  println("unpacking flag");
   int counter =0;
   for(int i=0; i<input.length(); i++){
     
@@ -223,7 +239,7 @@ void drawFlagString( String input, int player ){
     int val = int( input.charAt(i) )-48;
     
     int res = 0;
-    println("raw val "+val);
+   // println("raw val "+val);
     if(val-40>=0) {
       res=2;
       val=val-40;
@@ -233,7 +249,7 @@ void drawFlagString( String input, int player ){
       val = val-20;
     }
    // else {}
-     println("val "+val+" res: "+res);
+    // println("val "+val+" res: "+res);
      res = res+player*3;
     unpackedList[counter] = res;
     counter++;
@@ -267,10 +283,11 @@ void drawFlagString( String input, int player ){
   }
   
     loadPixels();
-  println("sendmap");
+  println("gotmap");
   if(clientId!=-1){
    for(int i=0; i<playerTiles[player].size(); i++){
- //    println("setit");
+     
+    println("setit");
      setTileColor(player,playerTiles[player].get(i));
    }
   }

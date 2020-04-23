@@ -12,7 +12,7 @@ color startColor2 = color(80,200,80);
 color startColor3 = color(80,80,200);
 boolean flagLoaded = false;
 int flagSelection=-1;
-int colorSelection =1;
+int colorSelection =0;
 
 String[] flags = new String[3]; 
 
@@ -161,21 +161,30 @@ int clickFlag(){
   
 return result; 
 }
+
+
+
+// sendmap()
+//
+// triggered when SEND button is pressed.
 void sendMap(){
  
-
-  
   String resultString = "";
-  int[] flag = new int[totalFlagPixels];
-  int startval = clientId*totalFlagPixels;
-  int maxExtraCount=20;
-  int currentval = -1;
-  int extraCount =  0;
   
-  IntList colors = new IntList();
-  IntList counts = new IntList();
+  // temporarily save flag data
+  int[] flag = new int[totalFlagPixels];
+  // get start index of user's flag data in the larger flags array
+  int startval = clientId*totalFlagPixels;
+  // the color of the last pixel checked
+  int currentval = -1;
+  
+  // what's the max number of same consecutive pixels to group together
   int maxCount = 20;
   int listLength =0;
+  
+  // get results in list form
+  IntList colors = new IntList();
+  IntList counts = new IntList();
   for(int i=startval; i<startval+totalFlagPixels; i++){
     
     int pixval = flagGrids[i] - clientId*3;
@@ -199,26 +208,24 @@ void sendMap(){
     }
   }
   
+  // convert lists to string
   int[] resultArray = new int[ listLength ];
-  
   for(int i=0; i<listLength; i++){
    int number = colors.get(i)*maxCount + counts.get(i);
   // if(number<10) resultString+=0;
    resultArray[i]=number;
    resultString += char(number+48);
   }
-  
- // println("result string: "+resultString);
- // println("items "+resultString.length()/2 );
- // flags[clientId]=resultString;
-//  drawFlagString( flagString );
-println("sending : "+resultString);
-println(resultArray);
-  c.write("newflag "+clientId
-  +" "+int(red(flagColors[clientId*3]))+" "+int(green(flagColors[clientId*3]))+" "+int(blue(flagColors[clientId*3]))
-  +" "+int(red(flagColors[clientId*3+1]))+" "+int(green(flagColors[clientId*3+1]))+" "+int(blue(flagColors[clientId*3+1]))
-  +" "+int(red(flagColors[clientId*3+2]))+" "+int(green(flagColors[clientId*3+2]))+" "+int(blue(flagColors[clientId*3+2]))
-  +" "+resultString+"\n");
+  println("red1");
+  println(int(red(flagColors[clientId*3])));
+  String finalMessage = "newflag "+clientId
+  +" " +int(red(flagColors[clientId*3]))  +" "+int(green(flagColors[clientId*3]))  +" "+int(blue(flagColors[clientId*3]))
+  +" " +int(red(flagColors[clientId*3+1]))+" "+int(green(flagColors[clientId*3+1]))+" "+int(blue(flagColors[clientId*3+1]))
+  +" " +int(red(flagColors[clientId*3+2]))+" "+int(green(flagColors[clientId*3+2]))+" "+int(blue(flagColors[clientId*3+2]))
+  +" " +resultString+"\n";
+ 
+println( "SENDING : "+finalMessage );
+  c.write(finalMessage);
 }
 
 

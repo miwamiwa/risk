@@ -2,10 +2,13 @@ void drawTroops(){
   
   for(int i=0; i<troopNumLocations.length; i+=2){
     fill(255);
-  rect(troopNumLocations[i],troopNumLocations[i+1],troopNumTxtSize+25,troopNumTxtSize+5);
+  rect(troopNumLocations[i],troopNumLocations[i+1],troopNumTxtSize+10,troopNumTxtSize+5);
   fill(0);
   textSize(troopNumTxtSize);
-  text(troopsOnTile[i/2],troopNumLocations[i]+10,troopNumLocations[i+1]+troopNumTxtSize);
+  int offset=5;
+  int units = troopsOnTile[i/2];
+  if(units>9) offset=0;
+  text( units ,troopNumLocations[i]+3+offset,troopNumLocations[i+1]+troopNumTxtSize);
   }
 }
 

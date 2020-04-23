@@ -37,11 +37,12 @@ void dataIn() {
   
  else if (match(sdata[0], "newflag")!=null) {
    println("new flag");
-   println(data);
-   println(sdata);
+   println(input);
+ //  println(data);
+ //  println(sdata);
   // int player = int( sdata
   int counter=0;
-  for(int i=1; i<10; i+=3){
+  for(int i=2; i<10; i+=3){
      flagColors[data[1]*3+counter] = color(data[i],data[i+1],data[i+2]); 
      counter++;
     }

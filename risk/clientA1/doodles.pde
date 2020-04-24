@@ -9,7 +9,7 @@
 void doodles() {
 
   // if mouse if pressed, not over a country or a button or the flag or anything else I can think of
-  if (mousePressed == true&&!buttonclicked&&!drawWheel) {
+  if (mousePressed == true&&!buttonclicked&&!drawWheel&&!cantDraw) {
     if (getTile()==-1&&flagSelection==-1&&!drawFlag) {
 
       // if there is no "last mouse position"

@@ -94,7 +94,7 @@ void makeFlag(){
         int result=clientId*flagW*flagH + i*flagW + j;
        // println("result "+result);
        //  println("num "+flagGrids[result]);
-         
+        
      fill(  flagColors [ flagGrids[result] ]) ;
      rect( 
      flagX + j*flagGridSize,
@@ -118,7 +118,7 @@ void newFlagPixel(int index){
   flagGrids[clientId*flagW*flagH+index] = selection;
   int i=floor(index/flagW);
   int j=index%flagW;
-  
+  noStroke();
   fill(flagColors[selection]);
   rect( 
      flagX + j*flagGridSize,

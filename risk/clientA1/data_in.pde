@@ -60,9 +60,12 @@ choiceMade = false;
 if (gamePhase=="pending") {
 
   // RECEIVE PLAYER ID
-  if (data[0]==1&&!joined) {
+  if (data[0]==1) {
+    sortLogAndAdd("new player!",3);
+    if(!joined){
     joined=true; 
     clientId = data[1];
+    }
   }
 
   // RECEIVE TERRITORY DISTRIBUTION
@@ -70,6 +73,7 @@ if (gamePhase=="pending") {
     println("released val: "+released);
     tileInfoPending = true;
     initGame();
+    sortLogAndAdd("pre-game started.",3);
   }
 }
 
@@ -86,6 +90,7 @@ else if (gamePhase=="initial troop assignment") {
   else if (match(sdata[0], "gamestart")!=null) {
     gamePhase = "game";
     placeableTroops = 0;
+    sortLogAndAdd("everyone is ready!",3);
   }
 }
 
@@ -96,10 +101,15 @@ else if (gamePhase=="game") {
   // (GAME PHASE) TRIGGER NEW TURN 
   if (match(sdata[0], "turnstart")!=null) {
     turnStart(data[1]);
+    sortLogAndAdd("It's "+playerNames[data[1]]+"'s turn.",3);
   }
 
   // RECEIVE COMBO AMOUNT
   else if (match(sdata[0], "comboamount")!=null) {
+    
+    sortLogAndAdd("combo request.",3);
+    sortLogAndAdd(data[1]+" dudes awarded!",3);
+    
     if (turnPhase=="combo placement"&&!comboPlaced) {
       // award placeable troops if player is in combo phase
       placeableTroops+=data[1];
@@ -118,6 +128,8 @@ else if (gamePhase=="game") {
 
   // START CHOICE PHASE (REINFORCE TROOPS OVER)
   else if (match(sdata[0], "choicephasestart")!=null) {
+    
+    sortLogAndAdd("picking an opponent",3);
     turnPhase="choice phase";
     attackingCountry=-1;
     attackTarget = -1;
@@ -127,11 +139,13 @@ else if (gamePhase=="game") {
 
   // START BATTLE (TRIGGER ATTACKER'S CHOICE PHASE)
   else if (match(sdata[0], "battlestart")!=null) {
+    
     // start first battle phase
     battlePhase="attackerchoice";
     // define attacker, defender, and countries involved.
     attackingCountry = data[1];
     attackTarget = data[2];
+    sortLogAndAdd( territoryNames[attackingCountry] +" vs "+ territoryNames[attackTarget]+". ", 3);
     defDice = getAvailableDice("defending");
     attacker = getTileOwner( data[1] );
     defender = getTileOwner( data[2] );
@@ -169,10 +183,13 @@ else if (gamePhase=="game") {
     defenderTileDamage = data[dmgI+1];
     troopsOnTile[ attackingCountry ] -= attackerTileDamage;
     troopsOnTile[ attackTarget ] -= defenderTileDamage;
-
+    sortLogAndAdd("Attacker lost "+attackerTileDamage,3);
+    sortLogAndAdd("Defender lost "+defenderTileDamage,3);
     // trigger result phase
     battlePhase = "result phase";
-
+    topTxtCount=0;
+    botTxtCount=0;
+    
     // check if attacker has won
     if (troopsOnTile[attackTarget]>0) {
       // if not, check if fight can continue
@@ -183,6 +200,7 @@ else if (gamePhase=="game") {
     else {
       // trigger conquer phase
       battlePhase="conquer phase";
+      sortLogAndAdd( territoryNames[attackingCountry] +" wins!",3);
       // card awarded
       conqueredSomething = true;
       c.write("conquest\n");
@@ -208,6 +226,7 @@ else if (gamePhase=="game") {
   // TRIGGER RETURN TO CHOICE MODE (AFTER FIGHT OR TO FINISH TROOP MOVE ON CONQUEST)
   else if (match(sdata[0], "backtochoice")!=null) {
     turnPhase="choice phase";
+    sortLogAndAdd("picking an opponent",3);
   }
 
   // ADD TROOPS ON CONQUEST
@@ -230,6 +249,7 @@ else if (gamePhase=="game") {
     tacticalMoveFrom =-1;
     tacticalTargetConfirmed = false;
     tacticalMoveTo =-1;
+    sortLogAndAdd("tactical move!",3);
   }
 
   // UPDATE TROOPS ON TACTICAL MOVE TILES

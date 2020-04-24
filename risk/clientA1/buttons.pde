@@ -27,7 +27,7 @@ boolean button (int x, int y, String title, int fontsize,color bgColor, color tx
       bgColor = #FF0000;
     }
   }
-  
+  stroke(0);
   // display button
   fill(bgColor);
   rect(x,y,w,h);

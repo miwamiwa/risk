@@ -123,6 +123,7 @@ void dataIn(){
          delay(100);
          s.write("choicephasestart\n");
          turnPhase="choice phase";
+         println("server started choice phase");
        }
      }
    }
@@ -140,6 +141,7 @@ void dataIn(){
         defendingCountry = data[2];
         attacker = getTileOwner(data[1]);
         defender = getTileOwner(data[2]);
+        println("server battle start");
         s.write("battlestart "+data[1]+" "+data[2]+"\n");
        }
        

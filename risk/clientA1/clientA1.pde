@@ -103,11 +103,12 @@ void setup() {
   // Connect to the server’s IP address and port­
   c = new Client(this, "127.0.0.1", 12345); // Replace with your server’s IP and port
   c.write("joined "+userName+"\n"); // joined
-    /*
+    
  // released = true;
  for(int i=0; i<4; i++){
   getCard(i); 
  }
+ /*
  gamePhase="game";//ÈgameÈ
  isTurnToPlay = true;
  turnPhase="attack phase";
@@ -125,7 +126,7 @@ void setup() {
 } 
 //boolean yo=false;
 boolean hasClicked=false;
-
+boolean cantDraw=false;
 
 void draw() {  
   buttonclicked = false;
@@ -143,12 +144,12 @@ void draw() {
   
    
   runGame();
-  doodles();
   getDataIn(); 
 
 if(joined) makeFlag();
 
   
+  doodles();
 }
 
 

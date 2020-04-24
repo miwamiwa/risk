@@ -28,13 +28,13 @@ void drawPlayerInfo(){
   rect(x-5,y-15,600,20);
   textSize(15);
   fill(#cc4444);
-  text("P1: "+playerNames[turnOrder[0]]+". Territories: "+playerTiles[turnOrder[0]].size(), x, y);
+  text("P1: "+playerNames[turnOrder[0]]+". score: "+playerTiles[turnOrder[0]].size(), x, y);
   
   fill(#22bb22);
-  text("P2: "+playerNames[turnOrder[1]]+". Territories: "+playerTiles[turnOrder[1]].size(), x+200, y);
+  text("P2: "+playerNames[turnOrder[1]]+". score: "+playerTiles[turnOrder[1]].size(), x+200, y);
   
   fill(#4444cc);
-  text("P3: "+playerNames[turnOrder[2]]+". Territories: "+playerTiles[turnOrder[2]].size(), x+400, y);
+  text("P3: "+playerNames[turnOrder[2]]+". score: "+playerTiles[turnOrder[2]].size(), x+400, y);
   
 
 

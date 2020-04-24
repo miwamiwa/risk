@@ -5,8 +5,13 @@ int buttonx4=650;
 int buttonx5=730;
 int buttonx6=810;
 int buttony=657;
+boolean hideBattleResult = true;
+//int resultPhaseCount=0;
+int botTxtCount=0;
+int topTxtCount=0;
 // button script:
 // if( button(415,640,"test",20,color(#FFFFFF),color(#000000), true) ){println("button click");}
+StringList comboList = new StringList();
 
 void runGamePhase(){
  
@@ -22,14 +27,14 @@ void runGamePhase(){
       
       infoRect("Select a combo from the list.");
       // display combo list
-      StringList combos = getAvailableCombos();
-      String combostring = "";
-      for(int i=0; i<combos.size(); i++){
+      comboList = getAvailableCombos();
+      
+      for(int i=0; i<comboList.size(); i++){
        
         int x = (i%4)*185;
         int y= floor(i/4) * 30;
-       if( button(410 + x,height-145 + y,combos.get(i),14,color(#FFFFFF),color(#000000), false ) ){
-        selectCombo(combos,i); 
+       if( button(410 + x,height-145 + y,comboList.get(i),14,color(#FFFFFF),color(#000000), false ) ){
+        selectCombo(comboList,i); 
        }
       }
       
@@ -50,25 +55,33 @@ void runGamePhase(){
     // *************** ******** REINFORCEMENT PHASE **************
     case "reinforcement phase":
       
+      comboList = getAvailableCombos();
+      String combotxt="";
+      boolean isFlashing=false;
+      if(comboList.size()>0){
+        combotxt="Combo available";
+        isFlashing = true;
+      }
+      else if (comboPlaced) combotxt="You can't place any more combos this turn (max 1)";
       // display instructions:
-      String combotxt = "\n                                        You can play a combo now if you have one available.";
-      if(comboPlaced) combotxt="\nYou can't place any more combos this turn (max 1)";
+     // combotxt = "\n                                        You can play a combo now if you have one available.";
+     // if(comboPlaced) combotxt="\nYou can't place any more combos this turn (max 1)";
+      
       if(placeableTroops>0){
         infoRect(
         "Your turn. \n"+placeableTroops+ " dudes left."
-        +"\nLEFT-CLICK on a country to add, RIGHT-CLICK to remove."
-        +"\nStart Turn when ready."
-        + combotxt
+        +"\nLEFT and RIGHT CLICK on a territory to add/remove dudes. Start Turn when ready."
+        
       ); 
         flashyText("PLACE DUDES!", 510,height-155,20,#333333,#ffcc00,true);
       }
       else {
         infoRect(
-        "Your turn. \nPress start when ready\n\n"
+        "Your turn. \nAll dudes placed. Right-click to remove. \nPress start when ready\n\n"
         + combotxt
       ); 
       }
-      
+      flashyText( combotxt, 640,678, 20, #000000, #ff4444, isFlashing );
       
       
       // Reinforcement phase controls:
@@ -77,7 +90,7 @@ void runGamePhase(){
       if( button(buttonx2+50,buttony,"Combos",20,color(#FFFFFF),color(#000000), false) ) turnPhase="combo placement";
       //if(enterPressed()&&!comboPlaced) 
       // - press button to start CHOICE PHASE
-      if( button(buttonx1,buttony,"Start Turn",20,color(#FFFFFF),color(#000000), false) ) turnPhase="choice phase";
+      if( button(buttonx1,buttony,"Start Turn",20,color(#FFFFFF),color(#000000), false) ) c.write("3 2\n");
       // - click to add/remove units
       addRemoveTroopsOnClick(3); 
 
@@ -86,32 +99,31 @@ void runGamePhase(){
     // ************************** CHOICE PHASE *********************
     case "choice phase": 
     
-    // press button at any time during choice phase to end turn.
-    if( button(buttonx6,buttony,"End Turn",20,color(#FFFFFF),color(#000000), false) ) c.write("turnisover\n"); 
+    
     
     // setup end text
-    String endtxt = "\nPRESS E to end turn (+ tactical move) (can't undo).";
-    if(conqueredSomething) endtxt = "\nPRESS E to draw a card and end you turn (+ tactical move)";
-    else endtxt += "\nYou must conquer at least 1 territory to draw a card";
+    String endtxt = "\nYou must conquer at least 1 territory to draw a card.";
+    if(conqueredSomething) endtxt = "\nEnding your turn will award you 1 card.";
     
     // attacking country not yet selected
     if(attackingCountry==-1){
       // display instructions
       infoRect( "battle phase.\nCLICK to select a country to attack from." +endtxt );
+      flashyText("SELECT territory to attack from", 407,678,20,#000000, flagColors[ clientId*3 ], true);
       // select attacking country
-      
        if(hasClicked&&mouseButton==LEFT&&!drawing&&!buttonclicked){
         int tile = getTile();
         if(tile!=-1){
           // select if tile is owned by user and has more than 1 unit
           if(isUserTile(tile)&&troopsOnTile[tile]>1){
            attackingCountry = tile;
-           released = false;
+           //released = false;
           }
         }
       }
       
-      
+      // press button at any time during choice phase to end turn.
+    if( button(buttonx6,buttony,"End Turn",20,color(#FFFFFF),color(#000000), false) ) c.write("turnisover\n"); 
     }
     
     // if attacking country is chosen
@@ -120,15 +132,18 @@ void runGamePhase(){
       // display instructions
       int atkdice = getAvailableDice("attacking");
       infoRect(
-      "Attacking country: "+territoryNames[attackingCountry]
-      +". /nSelect neighbour to attack, or another country to attack with."
-      +"\n"+atkdice+" dice available."
+      "Attacking country: "+territoryNames[attackingCountry]+". "+atkdice+" dice available."
+      +"\nYou can select a territory to attack, or another territory to attack from."
       );
       
+      flashyText("SELECT territory to attack", 407,678,20,#000000, flagColors[ clientId*3 ], true);
       // Controls:
       // press button to go back to selecting attacking country
-     if( button(buttonx2,buttony,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ) cancelCountrySelection();
+     if( button(buttonx5,buttony,"Cancel",20,color(#FFFFFF),color(#000000), false) ) cancelCountrySelection();
      
+     // press button at any time during choice phase to end turn.
+    if( button(buttonx6,buttony,"End Turn",20,color(#FFFFFF),color(#000000), false) ) c.write("turnisover\n"); 
+    
      // select country to attack
       if(hasClicked&&mouseButton==LEFT&&!drawing&&!buttonclicked){
       int tile = getTile();
@@ -152,14 +167,17 @@ void runGamePhase(){
       int atkdice = getAvailableDice("attacking");
       int defdice = getAvailableDice("defending");
       infoRect(
-        "Attacking country: "+territoryNames[attackTarget]+". "+atkdice+" dice available. "
-        +"\nDefending country: "+territoryNames[attackingCountry]+". "+defdice+" dice available. "
+        "Attacking country: "+territoryNames[attackingCountry]+". "+atkdice+" dice available. "
+        +"\nDefending country: "+territoryNames[attackTarget]+" ("+playerNames[ getTileOwner(attackTarget) ]+"). "+defdice+" dice available. "
         +"\n\nStart fight?"
       );
       
       // controls:
+      // press button at any time during choice phase to end turn.
+      if( button(buttonx4,buttony,"End Turn",20,color(#FFFFFF),color(#000000), false) ) c.write("turnisover\n"); 
+    
       // press button to go back to selecting country to attack
-      if( button(buttonx2,buttony,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ) cancelCountrySelection();
+      if( button(buttonx2,buttony,"Cancel",20,color(#FFFFFF),color(#000000), false) ) cancelCountrySelection();
       // press enter to start fight
       if( button(buttonx1,buttony,"Start",20,color(#FFFFFF),color(#000000), true) ){
         // ready to attack
@@ -167,6 +185,7 @@ void runGamePhase(){
         //setTileColor(getTileOwner(attackTarget),attackTarget);
         println("ready to attack!!");
         c.write("4 "+attackingCountry+" "+attackTarget+"\n");
+        cantDraw = true;
       }
   }
     break;
@@ -175,18 +194,25 @@ void runGamePhase(){
     case "tactical move phase": 
     
     // update instructions
-    String tacticalText="tactical move! PRESS R to cancel selection.\nPRESS B to skip (end turn).";
+    String tacticalText="tactical move! Select two countries to move units to and from. \nSelect a starting country, then a country that is connected to the last one you clicked\nRepeat until you are satisfied with your selection.";
     String nextline = "";
     if(!tacticalTargetConfirmed){
-      if(tacticalMoveFrom==-1) nextline = "\nCLICK to select first country";
-      else if (tacticalMoveTo==-1) nextline = "\nCLICK to select neighbouring country"
-      +"\n1st country: "+territoryNames[tacticalMoveFrom];
-      else nextline = "\nPRESS ENTER to confirm country selection (can't undo), \nor CLICK to select another neighbour of the 2nd country"
+      if(tacticalMoveFrom==-1) flashyText("CLICK to select starting country",407,678,20,#000000,#ff3333,true);
+      else if (tacticalMoveTo==-1){ 
+        flashyText("CLICK to select a territory connected to the last one you chose.",407,678,20,#000000,#ff3333,true);
+        nextline="\n1st country: "+territoryNames[tacticalMoveFrom];
+      }
+      else{ 
+        tacticalText="tactical move!";
+        nextline = "\nConfirm country selection when ready to move units (can't undo), \nor CLICK to select a territory connected to the last one you chose."
       +"\n1st country: "+territoryNames[tacticalMoveFrom]+". 2nd country: "+territoryNames[tacticalMoveTo];
+      }
     }
+      
+    
     else {
-      tacticalText = "tactical move! PRESS B to confirm (END TURN).";
-      nextline="\nRIGHT CLICK to add to first country, LEFT CLICK to add to second country"
+      tacticalText = "tactical move! \nUse LEFT & RIGHT CLICK to move dudes between the coutries you selected.";
+      nextline="\nEnd turn when ready."
       +"\n1st country: "+territoryNames[tacticalMoveFrom]+". 2nd country: "+territoryNames[tacticalMoveTo];
     }
     tacticalText+=nextline;
@@ -195,7 +221,9 @@ void runGamePhase(){
       
       // Tactical move phase controls: 
       
-      // if tactical move targets selected:
+      // have remove and back buttons only before tactical move countries are confirmed
+      if(!tacticalTargetConfirmed){
+         // if tactical move targets selected:
       // - press Enter to confirm targets (proceed to tactical move)
       if( button(buttonx1,buttony,"Confirm Selection",20,color(#FFFFFF),color(#000000), false) ){
         if(tacticalMoveFrom!=-1&&tacticalMoveTo!=-1&&!tacticalTargetConfirmed){
@@ -203,19 +231,33 @@ void runGamePhase(){
        delay(100);
      } 
       }
-     
-     // - press B to end tactical phase (trigger next turn)
-     if( button(buttonx6,buttony,"End Turn",20,color(#FFFFFF),color(#000000), false) &&!choiceMade){
-       choiceMade = true;
-       c.write("tacticalphaseover\n");
-     }
-     
-     // - press r to go back a step
-     if( button(buttonx2,buttony,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ){
+      
+        // - press r to go back a step
+     if( button(buttonx3+20,buttony,"Cancel Selection",20,color(#FFFFFF),color(#000000), false) ){
        if(tacticalTargetConfirmed) tacticalTargetConfirmed=false;
        else if(tacticalMoveTo!=-1) tacticalMoveTo=-1;
        else if(tacticalMoveFrom!=-1) tacticalMoveFrom=-1;
      }
+     
+     // - press B to end tactical phase (trigger next turn)
+     if( button(buttonx6,buttony,"End Turn (skip tactical move)",20,color(#FFFFFF),color(#000000), false) &&!choiceMade){
+       choiceMade = true;
+       c.write("tacticalphaseover\n");
+     }
+     
+      }
+      else {
+        // - press B to end tactical phase (trigger next turn)
+     if( button(buttonx1,buttony,"End Turn (confirm tactical move)",20,color(#FFFFFF),color(#000000), false) &&!choiceMade){
+       choiceMade = true;
+       c.write("tacticalphaseover\n");
+     }
+        
+      }
+     
+     
+     
+   
      
      // once tactical targets are confirmed,
      // - left/right click to add/remove troops
@@ -280,7 +322,7 @@ void runGamePhase(){
          
          // display instructions
          infoRect(
-         "Attacking "+territoryNames[attackTarget]+" ("+playerNames[defender]+") from "+territoryNames[attackingCountry]+". "
+         "Fight!! Attacking "+territoryNames[attackTarget]+" ("+playerNames[defender]+") from "+territoryNames[attackingCountry]+". "
          + "\nYou have "+availableDice+" dice available. Defender has "+defDice+"."
          );
          
@@ -307,18 +349,26 @@ void runGamePhase(){
          
          // display instructions
          String results = formatResults("attacker");
-         String instru = "\nNot enough units to continue. PRESS R to end battle.";
-         if(canContinue) instru="\nPRESS ENTER to continue battle. PRESS R to end battle.";
+         int rollpos = results.indexOf("roll");
+
+         
+         println("roll pos "+rollpos);
+         String instru = "\nNot enough units to continue.";
+         if(canContinue) instru="\nContinue battle?";
+         
+         if(hideBattleResult) instru="";
          infoRect(results+instru);
          
+         if(!hideBattleResult){
          // (atk battle phase) result phase controls:
          // press r to return to choice phase 
          if( button(buttonx1,buttony,"Exit battle",20,color(#FFFFFF),color(#000000), false) )
          returnToChoicePhase();
          // press enter to continue battle
          if(canContinue){
-           if( button(buttonx2,buttony,"Continue",20,color(#FFFFFF),color(#000000), false) )
+           if( button(buttonx3,buttony,"Continue",20,color(#FFFFFF),color(#000000), false) )
           c.write("continuebattle\n"); 
+         }
          }
        }
        
@@ -328,20 +378,18 @@ void runGamePhase(){
           // display insructions
           
           String results = formatResults("attacker");
-         
-           infoRect(
-           results+
-           "\nYOU WIN! LEFT/RIGHT CLICK to add/remove dudes to/from your new territory."
-           +"\nPRESS R to confirm placement (continue)"
-          );
           
+          String wintxt = "";
+          if(!hideBattleResult)  wintxt="\nYOU WIN! LEFT/RIGHT CLICK to move dudes to/from your new territory.";
+           infoRect( results+ wintxt );
+          
+          if(!hideBattleResult){
           // press r to return to choice phase
           if( button(buttonx1,buttony,"Confirm placement",20,color(#FFFFFF),color(#000000), false) ) returnToChoicePhase();
           
           // controls
           // click to add/remove troops on belligerent tiles
-          if(hasClicked&&!choiceMade&&!drawing&&!buttonclicked&&released){
-            released = false;
+          if(hasClicked&&!choiceMade&&!drawing&&!buttonclicked&&!drawFlag){
            if(mouseButton==LEFT){
             choiceMade = true;
             c.write("moretroops\n");
@@ -350,6 +398,7 @@ void runGamePhase(){
             choiceMade= true;
             c.write("lesstroops\n");
            }
+          }
           }
         }
     break;
@@ -445,9 +494,13 @@ String formatResults(String who){
    String defDiceString = "";
    String a=playerNames[attacker] + " rolls ";
    String d=playerNames[defender] + " rolls ";
+   int topRate =2;
+   int botRate =2;
+   
+   
    switch(who){
-    case "attacker": a="YOU roll "; break;
-    case "defender": d="YOU roll "; break;
+    case "attacker": a="You roll "; break;
+    case "defender": d="You roll "; break;
    }
    for(int i=0; i<3; i++){
     if(lastAttackRoll[i]!=-1) atkDiceString+=lastAttackRoll[i]+" ";
@@ -455,10 +508,35 @@ String formatResults(String who){
    for(int i=0; i<2; i++){
    if(lastDefenseRoll[i]!=-1)  defDiceString+=lastDefenseRoll[i]+" ";
    }
-   results = fightingPlayers(who)
-   +"\n"+a+atkDiceString+"... Units lost: "+attackerTileDamage+". "
-   +"\n"+d+defDiceString+"... Units lost: "+defenderTileDamage+". ";
-         
+   
+   String toptxt =a+atkDiceString+"............. Units lost: "+attackerTileDamage+". ";
+   String bottxt = d+defDiceString+"............. Units lost: "+defenderTileDamage+". ";
+   int topNumsStart = toptxt.indexOf( " ", toptxt.indexOf("roll"));
+   int topNumsEnd = toptxt.indexOf(".");
+   int botNumsStart = bottxt.indexOf( " ", bottxt.indexOf("roll"));
+   int botNumsEnd = bottxt.indexOf(".");
+   
+   toptxt = toptxt.substring(0, constrain( topTxtCount,0,toptxt.length() ));
+   bottxt = bottxt.substring(0, constrain( botTxtCount,0,bottxt.length() ));
+   
+   int newTopLength = toptxt.length();
+   int newBotLength = bottxt.length();
+   if(newTopLength>topNumsStart&&newTopLength<topNumsEnd){
+     toptxt = toptxt.substring(0,newTopLength-1) + char( floor( random(6) + 49));
+     topRate =8;
+   }
+   else if(newTopLength>topNumsEnd) topRate=1;
+   if(newBotLength>botNumsStart&&newBotLength<botNumsEnd){
+     bottxt = bottxt.substring(0,newBotLength-1) + char( floor( random(6) + 49));
+     botRate =8;
+   }
+   else if(newBotLength>botNumsEnd) botRate=1;
+   
+   hideBattleResult = true;
+   if(topRate==1&&botRate==1) hideBattleResult = false;
+   if(frameCount%topRate==0) topTxtCount++;
+   if(frameCount%botRate==0) botTxtCount++;
+   results = fightingPlayers(who) +"\n"+toptxt +"\n"+bottxt;
    return results;
 }
 
@@ -467,8 +545,8 @@ String fightingPlayers(String who){
   String d=playerNames[defender];
   String v="attacks";
   switch(who){
-    case "attacker": a="YOU"; break;
-    case "defender": d="YOU"; break;
+    case "attacker": a="you"; break;
+    case "defender": d="you"; break;
   }
   return territoryNames[attackingCountry]+" ("+a+") "+v+" "+territoryNames[attackTarget]+" ("+d+"). ";
 }

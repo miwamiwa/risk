@@ -4,6 +4,9 @@ String startLogText="type something and press enter to send!";
 String logBuffer=startLogText;
 int logOffset=0;
 int logViewMax=17;
+
+
+
 void showLog(){
   
   noStroke();
@@ -22,8 +25,19 @@ void showLog(){
   text(logBuffer,x,y+h-46, w+50,55);
  // fill(245);
   for(int i=0; i<logViewMax; i++){
+    fill(245);
     if(logData[i+33+logOffset].indexOf("says")!=-1) fill(145);
-    else fill(245);
+    else{
+      int searchIndex=1;
+      String searchString=logData[i+33-searchIndex+logOffset];
+     // if(searchString!=""){
+      while(searchString!=""){
+        if (searchString.indexOf("game update")!=-1) fill(200,80,80);
+        searchIndex++;
+        searchString=logData[i+33-searchIndex+logOffset];
+      }
+     // }
+    }
    text(logData[i+33],x,y+i*(logTxtSize+4)); 
   }
 }
@@ -67,7 +81,7 @@ void sendLogBuffer(){
 }
 
 void sortLogAndAdd( String input, int source ){
-  String sourceName ="anonymous";
+  String sourceName ="game update";
    if(source<3) sourceName = playerNames[ source ];
    newLog(sourceName+" says:");
    
@@ -75,7 +89,7 @@ void sortLogAndAdd( String input, int source ){
   
   int charcount=0;
   String currentline="";
-  int maxchar=19;
+  int maxchar=21;
   println("words: "+words.length);
   for(int i=0; i<words.length; i++){
     int chars = words[i].length()+1;

@@ -2,6 +2,7 @@ void drawTroops(){
   
   for(int i=0; i<troopNumLocations.length; i+=2){
     fill(255);
+    stroke(0);
   rect(troopNumLocations[i],troopNumLocations[i+1],troopNumTxtSize+10,troopNumTxtSize+5);
   fill(0);
   textSize(troopNumTxtSize);

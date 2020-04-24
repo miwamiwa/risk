@@ -96,7 +96,7 @@ void draw() {
   c = s.available();
   if (c != null) {
     input = c.readString(); 
-    println(input);
+    println("server input: " +input);
     int index = input.indexOf("\n");
     if(index==-1){
      input+="\n";

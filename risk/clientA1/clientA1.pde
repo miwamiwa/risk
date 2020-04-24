@@ -1,4 +1,4 @@
-String userName = "chucky1";
+String userName = "c3p0";
 
 int[] doodleBuffer = new int[20];
 int doodleCount=0;

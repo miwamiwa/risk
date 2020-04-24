@@ -7,9 +7,9 @@ void getDataIn() {
     if (index==-1) {
       input+="\n";
       println("MESSAGE INPUT MISSING END TAG!!! MESSAGE: "+input);
-      fill(200, 0, 200);
-      textSize(100);
-      text("ERROR ON MESSAGE "+input, 400, 400);
+     // fill(200, 0, 200);
+     // textSize(100);
+     // text("ERROR ON MESSAGE "+input, 400, 400);
     }
     input = input.substring(0, input.indexOf("\n"));  // Only up to the newline
     data = int(split(input, ' '));  // Split values into an array
